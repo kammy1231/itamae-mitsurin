@@ -13,7 +13,9 @@ Customized version of Itamae and plugin
 
 ```
 $ gem install itamae-mitsurin
-$ itamae-mitsurin init [project_name]
+$ mkdir project_dir
+$ cd project_dir
+$ itamae-mitsurin init
 ```
 
 ## Usage AWS Resource

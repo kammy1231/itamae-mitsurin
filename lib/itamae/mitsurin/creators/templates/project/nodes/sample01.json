@@ -3,6 +3,7 @@
     "recipe[_base]"
     ],
   "environments": {
+    "set": "sample",
     "hostname": "sample01.localhost"
   }
 }
