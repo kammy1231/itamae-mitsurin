@@ -71,7 +71,7 @@ module Itamae
 
     desc "version", "Print version"
     def version
-      puts "Itamae v#{Itamae::Mitsurin::VERSION}"
+      puts "Itamae-Mitsurin v#{Itamae::Mitsurin::VERSION}"
     end
 
     private

@@ -14,10 +14,10 @@ module Itamae
         puts "Itamae-Mitsurin v#{Itamae::Mitsurin::VERSION}"
       end
 
-      desc "init [NAME]", "Create a new project"
-      def init(name)
+      desc "init", "Create a new project"
+      def init
         creator = Creators::Project.new
-        creator.destination_root = name
+        creator.destination_root
         creator.invoke_all
       end
 
