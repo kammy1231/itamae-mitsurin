@@ -1,0 +1,7 @@
+{
+  "environments": {
+    "ssh_port": "22",
+    "ssh_user": "ec2-user",
+    "ssh_key":  "keipair.pem"
+  }
+}
