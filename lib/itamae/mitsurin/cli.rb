@@ -7,7 +7,7 @@ module Itamae
     class CLI < Thor
       CREATE_TARGETS = %w[ cookbook ].freeze
 
-      class_option :with_git, type: :string, aliases: ['-g']
+#      class_option :with_git, type: :string, aliases: ['-g']
 
       desc "version", "Print version"
       def version

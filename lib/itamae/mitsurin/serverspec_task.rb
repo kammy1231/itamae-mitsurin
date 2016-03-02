@@ -1,6 +1,4 @@
-require 'serverspec'
 require 'rake'
-require 'rspec/core/rake_task'
 require 'json'
 require 'simple_color'
 include Rake::DSL if defined? Rake::DSL
@@ -52,7 +50,9 @@ module Itamae
 
             file_name = File.basename(node_file, '.json')
             node_attr = JSON.parse(File.read(node_file), symbolize_names: true)
-            desc "Run to #{file_name}"
+
+            desc "Spec to #{file_name}"
+            task node_attr[:environments][:hostname].split(".")[0] do
 
             begin
               recipes = []
@@ -81,24 +81,33 @@ module Itamae
             all << node_short
 
             desc "Run spec to #{file_name}"
-            RSpec::Core::RakeTask.new(node_short.to_sym) do |t|
               ENV['TARGET_HOST'] = node_name
               ENV['NODE_FILE'] = node_file
               ENV['SSH_PASSWORD'] = ssh_password
               ENV['SSH_KEY'] = "keys/#{ssh_key}"
 
-              specs = []
-              spec_recips = []
-              recipes.each {|hash|
-                specs << hash.keys.join
-                spec_recips << hash.values.join unless hash.values.join.empty?
-              }
+              specs = "bundle exec rspec"
 
-              t.pattern = "site-cookbooks/**/\{#{specs.join(',')}\}/spec/\{default,#{spec_recips.join(',')}\}_spec.rb"
-              t.fail_on_error = true
-              color = SimpleColor.new
-              color.echos(:red, "Run Serverspec to #{node_name}")
-              color.echos(:green, "Run List to #{specs.uniq.sort.join(", ")}")
+              # recipe load to_spec
+              spec_pattern = []
+              recipes.each do |spec_h|
+                if spec_h["#{spec_h.keys.join}"].nil?
+                  spec_pattern <<
+                      " #{Dir.glob("site-cookbooks/**/#{spec_h.keys.join}/spec/default_spec.rb").join}"
+                else
+                  spec_pattern <<
+                      " #{Dir.glob("site-cookbooks/**/#{spec_h.keys.join}/spec/#{spec_h["#{spec_h.keys.join}"]}_spec.rb").join}"
+                end
+              end
+              spec_pattern.sort_by! {|item| File.dirname(item)}
+              specs << spec_pattern.join
+              run_list_noti = []
+              spec_pattern.each {|c_spec| run_list_noti << c_spec.split("/") [2]}
+              color.echos(:red ,%!Run Serverspec to \"#{node_name}\"!)
+              color.echos(:green, %!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
+              puts color.echos(:white, %!#{specs}!)
+              st = system specs
+              exit 1 unless st
             end
             task :all => all
             task :default => :all

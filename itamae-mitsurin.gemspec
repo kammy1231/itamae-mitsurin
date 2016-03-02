@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
   spec.name          = "itamae-mitsurin"
   spec.version       = Itamae::Mitsurin::VERSION
   spec.authors       = ["Akihiro Kamiyama"]
-  spec.email         = ["kamiyama@qualitia.co.jp"]
+  spec.email         = ["akihiro.vamps@gmail.com"]
   spec.summary       = %q{Customized version of Itamae and Itamae plugin}
   spec.homepage      = "https://github.com/kammy1231/itamae-mitsurin"
   spec.license       = "MIT"
@@ -24,9 +24,9 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "schash", "~> 0.1.0"
   spec.add_runtime_dependency "aws-sdk", "~> 2"
   spec.add_runtime_dependency "serverspec", [">= 2.30", "< 3.0.0"]
+  spec.add_runtime_dependency "rake"
 
   spec.add_development_dependency "bundler", "~> 1.10"
-  spec.add_development_dependency "rake"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "docker-api", "~> 1.20"

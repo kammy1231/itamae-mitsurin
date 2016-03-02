@@ -1,6 +1,9 @@
+require 'specinfra'
 require 'rake'
 require 'json'
 require 'simple_color'
+require 'specinfra/helper/set'
+include Specinfra::Helper::Set
 include Rake::DSL if defined? Rake::DSL
 
 module Itamae
@@ -68,8 +71,22 @@ module Itamae
 
         color = SimpleColor.new
 
+        set :backend, :exec
+
         namespace :itamae do
-          Dir.glob("nodes/**/*.json").each do |node_file|
+          branches = Specinfra.backend.run_command('git branch')
+            branch = branches.stdout.split("\n").select{|a| /\*/ === a }
+            branch = branch.pop.gsub(/\* (.+)/, '\1')
+            if branch == 'staging'
+              branch = 'staging/**'
+            elsif branch == 'master'
+              branch = 'production/**'
+            else
+              branch = 'other/**'
+            end
+          end
+
+          Dir.glob("nodes/#{branch}/*.json").each do |node_file|
 
             bname = File.basename(node_file, '.json')
             node_h = JSON.parse(File.read(node_file), symbolize_names: true)

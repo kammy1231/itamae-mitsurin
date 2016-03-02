@@ -4,10 +4,9 @@ Customized version of Itamae and plugin
 
 ## Concept
 
-- More like Chef
-- Minimum attributes
+- Like more Chef
+- Little attributes
 - Support AWS Resource
-- Require Rake
 
 ## Installation
 
@@ -25,13 +24,13 @@ $ itamae-mitsurin init
 
 Aws.config[:region] = 'ap-northeast-1'
 
-aws_ebs_volume 'db_ebs_volume' do
+aws_ebs_volume "ebs_name" do
   action [:create, :attach]
-  availability_zone 'ap-northeast-1b'
-  device '/dev/xvdf'
+  availability_zone "ap-northeast-1a"
+  device '/dev/xvdb'
   volume_type 'standard'
-  size 30
-  instance_id node['ec2']['instance-id']
+  size 10
+  instance_id 'i-xxxxxxx'
 end
 ```
 
