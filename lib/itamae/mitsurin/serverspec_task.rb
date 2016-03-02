@@ -90,6 +90,7 @@ module Itamae
               ENV['SUDO_PASSWORD'] = sudo_password
               ENV['SSH_KEY'] = "keys/#{ssh_key}"
               ENV['SSH_PORT'] = ssh_port
+              ENV['SSH_USER'] = ssh_user
 
               specs = "bundle exec rspec"
 
