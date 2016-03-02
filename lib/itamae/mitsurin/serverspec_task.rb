@@ -44,6 +44,8 @@ module Itamae
           recipes
         end
 
+        color = SimpleColor.new
+
         namespace :spec do
           all = []
           Dir.glob("tmp-nodes/**/*.json").each do |node_file|
@@ -105,7 +107,6 @@ module Itamae
               spec_pattern.each {|c_spec| run_list_noti << c_spec.split("/") [2]}
               color.echos(:red ,%!Run Serverspec to \"#{node_name}\"!)
               color.echos(:green, %!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
-              puts color.echos(:white, %!#{specs}!)
               st = system specs
               exit 1 unless st
             end
