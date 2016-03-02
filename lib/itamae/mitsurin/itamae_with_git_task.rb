@@ -76,7 +76,7 @@ module Itamae
         namespace :itamae do
           branches = Specinfra.backend.run_command('git branch')
             branch = branches.stdout.split("\n").select{|a| /\*/ === a }
-            branch = branch.pop.gsub(/\* (.+)/, '\1')
+            branch = branch.join.gsub(/\* (.+)/, '\1')
             if branch == 'staging'
               branch = 'staging/**'
             elsif branch == 'master'
@@ -84,7 +84,6 @@ module Itamae
             else
               branch = 'other/**'
             end
-          end
 
           Dir.glob("nodes/#{branch}/*.json").each do |node_file|
 

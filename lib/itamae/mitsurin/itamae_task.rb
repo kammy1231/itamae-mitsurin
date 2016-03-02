@@ -102,7 +102,7 @@ module Itamae
                 exit 1
               end
 
-              # get recipe attr
+              # get recipes attr
               recipe_attr_file = []
               recipes.each do |recipe_h|
                 if recipe_h["#{recipe_h.keys.join}"].nil?
@@ -116,25 +116,25 @@ module Itamae
 
               recipe_attr_file.flatten!
 
-              # recipe attr other=env
+              # recipes attr other=env
               recipe_env_h_a = []
               recipe_attr_file.each do |file|
                 recipe_h = JSON.parse(File.read(file), symbolize_names: true)
                 recipe_env_h_a << recipe_h.deep_merge(env_h)
               end
 
-              # recipe attr other=recipes
+              # recipe attr other=recipes_env
               moto = recipe_env_h_a[0]
               recipe_env_h_a.each {|hash| moto.deep_merge!(hash)}
               recipe_env_h = moto
 
               if recipe_env_h.nil?
-                # node attr other=env
+                # env attr other=node
                 node_env_h = env_h.deep_merge(node_h)
                 node_env_j = jq node_env_h
                 write_json(bname) {|file| file.puts node_env_j}
               else
-                # node attr other=recipe_env
+                # recipe_env attr other=node
                 recipe_env_node_h = recipe_env_h.deep_merge(node_h)
                 recipe_env_node_j = jq recipe_env_node_h
                 write_json(bname) {|file| file.puts recipe_env_node_j}
