@@ -251,8 +251,12 @@ module Itamae
 
         if @options[:ask_password]
           print "password: "
-          password = STDIN.noecho(&:gets).strip
-          print "#{ENV['SSH_PASSWORD']}\n"
+          unless ENV['SSH_PASSWORD'].nil?
+            password = ENV['SSH_PASSWORD']
+          else
+            password = STDIN.noecho(&:gets).strip
+          end
+          print "\n"
           opts.merge!(password: password)
         end
 

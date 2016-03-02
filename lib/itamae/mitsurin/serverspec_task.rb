@@ -76,6 +76,7 @@ module Itamae
             node_name = node_attr[:environments][:hostname]
             ssh_user = node_attr[:environments][:ssh_user]
             ssh_password = node_attr[:environments][:ssh_password]
+            sudo_password = node_attr[:environments][:sudo_password]
             ssh_port = node_attr[:environments][:ssh_port]
             ssh_key = node_attr[:environments][:ssh_key]
 
@@ -86,7 +87,9 @@ module Itamae
               ENV['TARGET_HOST'] = node_name
               ENV['NODE_FILE'] = node_file
               ENV['SSH_PASSWORD'] = ssh_password
+              ENV['SUDO_PASSWORD'] = sudo_password
               ENV['SSH_KEY'] = "keys/#{ssh_key}"
+              ENV['SSH_PORT'] = ssh_port
 
               specs = "bundle exec rspec"
 

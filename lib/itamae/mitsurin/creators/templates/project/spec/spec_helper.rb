@@ -23,9 +23,10 @@ attributes = JSON.parse(File.read(node_file), symbolize_names: true)
 set_property attributes
 
 options = Net::SSH::Config.for(host)
-options[:user] ||= Etc.getlogin
+options[:user] = ENV['SSH_USER']
 options[:password] = ENV['SSH_PASSWORD']
 options[:keys] = ENV['SSH_KEY']
+options[:port] = ENV['SSH_PORT']
 
 set :host, options[:host_name] || host
 set :shell, '/bin/bash'

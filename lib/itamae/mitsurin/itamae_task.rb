@@ -145,12 +145,14 @@ module Itamae
               node = node_property[:environments][:hostname]
               ssh_user = node_property[:environments][:ssh_user]
               ssh_password = node_property[:environments][:ssh_password]
+              sudo_password = node_property[:environments][:sudo_password]
               ssh_port = node_property[:environments][:ssh_port]
               ssh_key = node_property[:environments][:ssh_key]
 
               ENV['TARGET_HOST'] = node
               ENV['NODE_FILE'] = node_file
               ENV['SSH_PASSWORD'] = ssh_password
+              ENV['SUDO_PASSWORD'] = sudo_password
 
               command = "bundle exec itamae ssh"
               command << " -h #{node}"
@@ -178,7 +180,7 @@ module Itamae
               command << command_recipe.join
 
               color.echos(:red ,%!Run Itamae to \"#{bname}\"!)
-              color.echos(:blue, %!Set Roles to \"#{get_roles(node_file).join(", ")}\"!)
+              color.echos(:blue, %!Role List to \"#{get_roles(node_file).join(", ")}\"!)
               run_list_noti = []
               command_recipe.each {|c_recipe| run_list_noti << c_recipe.split("/") [2]}
               color.echos(:green, %!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
