@@ -1,6 +1,6 @@
 require 'specinfra'
 require 'json'
-require 'simple_color'
+require 'highline'
 require 'specinfra/helper/set'
 include Specinfra::Helper::Set
 include Rake::DSL if defined? Rake::DSL
@@ -68,7 +68,7 @@ module Itamae
           end
         end
 
-        color = SimpleColor.new
+        hl = HighLine.new
 
         set :backend, :exec
 
@@ -194,12 +194,12 @@ module Itamae
               command_recipe.sort_by! {|item| File.dirname(item)}
               command << command_recipe.join
 
-              color.echos(:red ,%!Run Itamae to \"#{bname}\"!)
-              color.echos(:blue, %!Role List to \"#{get_roles(node_file).join(", ")}\"!)
+              puts hl.color(%!Run Itamae to \"#{bname}\"!, :red)
+              puts hl.color(%!Role List to \"#{get_roles(node_file).join(", ")}\"!, :blue)
               run_list_noti = []
               command_recipe.each {|c_recipe| run_list_noti << c_recipe.split("/") [2]}
-              color.echos(:green, %!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
-              puts color.echos(:white, %!#{command}!)
+              puts hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
+              puts hl.color(%!#{command}!, :white)
               st = system command
               exit 1 unless st
             end

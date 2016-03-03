@@ -1,5 +1,5 @@
 require 'json'
-require 'simple_color'
+require 'highline'
 include Rake::DSL if defined? Rake::DSL
 
 module Itamae
@@ -43,7 +43,7 @@ module Itamae
           recipes
         end
 
-        color = SimpleColor.new
+        hl = HighLine.new
 
         namespace :spec do
           all = []
@@ -108,8 +108,8 @@ module Itamae
               specs << spec_pattern.join
               run_list_noti = []
               spec_pattern.each {|c_spec| run_list_noti << c_spec.split("/") [2]}
-              color.echos(:red ,%!Run Serverspec to \"#{node_name}\"!)
-              color.echos(:green, %!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
+              puts hl.color(%!Run Serverspec to \"#{node_name}\"!, :red)
+              puts hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
               st = system specs
               exit 1 unless st
             end

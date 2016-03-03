@@ -20,7 +20,6 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "thor"
   spec.add_runtime_dependency "hashie"
   spec.add_runtime_dependency "ansi"
-  spec.add_runtime_dependency "simple_color"
   spec.add_runtime_dependency "schash", "~> 0.1.0"
   spec.add_runtime_dependency "aws-sdk", "~> 2"
   spec.add_runtime_dependency "serverspec", [">= 2.30", "< 3.0.0"]
