@@ -1,1 +1,0 @@
-require 'itamae/ext/specinfra'

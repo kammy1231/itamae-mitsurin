@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'itamae-mitsurin/mitsurin/cli'
+ItamaeMitsurin::Mitsurin::CLI.start
+

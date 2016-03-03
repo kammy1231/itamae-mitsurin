@@ -1,11 +1,11 @@
 # coding: utf-8
 lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
-require 'itamae/mitsurin/version'
+require 'itamae-mitsurin/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "itamae-mitsurin"
-  spec.version       = Itamae::Mitsurin::VERSION
+  spec.version       = ItamaeMitsurin::VERSION
   spec.authors       = ["Akihiro Kamiyama"]
   spec.email         = ["akihiro.vamps@gmail.com"]
   spec.summary       = %q{Customized version of Itamae and Itamae plugin}
@@ -27,7 +27,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "highline"
 
   spec.add_development_dependency "bundler", "~> 1.10"
-  spec.add_development_dependency "rake-complier"
+  spec.add_development_dependency "rake-compiler"
   spec.add_development_dependency "rspec", "~> 3.0"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "docker-api", "~> 1.20"

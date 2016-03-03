@@ -11,23 +11,25 @@ rescue LoadError
   puts 'If you want to create gem, You must install Bundler'
 end
 
-require './lib/itamae/mitsurin/version.rb'
+require './lib/itamae-mitsurin/version.rb'
 def version
-  Itamae::Mitsurin::VERSION
+  ItamaeMitsurin::VERSION
 end
 
-task :default => :test
-task :test => :compile
-Rake::TestTask.new do |t|
-  t.libs << 'lib' << 'test'
-  t.test_files = FileList['test/test_*.rb'].exclude('test/test_assoccoords.rb')
-end
+#task :default => :test
+#task :test => :compile
+Rake::TestTask.new
+#Rake::TestTask.new do |t|
+#  t.libs << 'lib' << 'test'
+#  t.libs << 'test'
+#  t.test_files = FileList['test/test*.rb'].exclude('test/test_assoccoords.rb')
+#end
 
-Rake::ExtensionTask.new do |ext|
-  ext.name = 'itamae-mitsurin'
-  ext.ext_dir = 'ext/'
-  ext.lib_dir = 'lib/'
-end
+#Rake::ExtensionTask.new do |ext|
+#  ext.name = 'itamae-mitsurin'
+#  ext.ext_dir = 'ext/'
+#  ext.lib_dir = 'lib/'
+#end
 
 Rake::PackageTask.new('itamae-mitsurin', "#{version}") do |t|
   t.need_tar_gz = true
@@ -37,7 +39,7 @@ end
 namespace :release do
   desc "Bump up version and commit"
   task :version_up do
-    version_file = File.expand_path("lib/itamae/mitsurin/version.txt")
+    version_file = File.expand_path("lib/itamae-mitsurin/version.txt")
     current_version = File.read(version_file).strip
 
     if /\A(.+?)(\d+)\z/ =~ current_version
