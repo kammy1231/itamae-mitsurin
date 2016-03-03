@@ -1,7 +1,7 @@
 require 'thor'
 require 'thor/group'
 
-module Itamae
+module ItamaeMitsurin
   module Mitsurin
     module Creators
       class Project < Thor::Group
