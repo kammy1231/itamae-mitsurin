@@ -1,6 +1,7 @@
 {
   "run_list": [
-    "recipe[_base]"
+    "role[]",
+    "recipe[]"
     ],
   "environments": {
     "set": "sample",
