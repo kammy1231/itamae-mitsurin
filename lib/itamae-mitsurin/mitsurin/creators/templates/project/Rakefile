@@ -1,2 +1,2 @@
-require 'itamae/mitsurin/itamae_task'
-require 'itamae/mitsurin/serverspec_task'
+require 'itamae-mitsurin/mitsurin/itamae_task'
+require 'itamae-mitsurin/mitsurin/serverspec_task'
