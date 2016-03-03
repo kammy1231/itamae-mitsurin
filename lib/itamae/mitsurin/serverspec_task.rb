@@ -1,4 +1,3 @@
-require 'rake'
 require 'json'
 require 'simple_color'
 include Rake::DSL if defined? Rake::DSL

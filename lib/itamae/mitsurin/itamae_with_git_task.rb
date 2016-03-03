@@ -1,5 +1,4 @@
 require 'specinfra'
-require 'rake'
 require 'json'
 require 'simple_color'
 require 'specinfra/helper/set'
