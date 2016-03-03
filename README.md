@@ -7,6 +7,7 @@ Customized version of Itamae and plugin
 - Like more Chef
 - Little attributes
 - Support AWS Resource
+- Running on the RakeTask
 
 ## Installation
 
@@ -14,7 +15,7 @@ Customized version of Itamae and plugin
 $ gem install itamae-mitsurin
 $ mkdir project_dir
 $ cd project_dir
-$ itamae-mitsurin init
+$ manaita init
 ```
 
 ## Usage AWS Resource
