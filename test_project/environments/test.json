@@ -1,0 +1,7 @@
+{
+  "environments": {
+    "ssh_port": "10022",
+    "ssh_user": "root",
+    "ssh_password": "odebuchan!"
+  }
+}

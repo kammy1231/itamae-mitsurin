@@ -1,0 +1,9 @@
+{
+  "run_list": [
+    "role[test]"
+    ],
+  "environments": {
+    "set": "test",
+    "hostname": "10.129.73.44"
+  }
+}
