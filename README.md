@@ -23,10 +23,9 @@ $ manaita init
 ```ruby
 # recipe
 
-Aws.config[:region] = 'ap-northeast-1'
-
 aws_ebs_volume "ebs_name" do
   action [:create, :attach]
+  region "ap-northeast-1"
   availability_zone "ap-northeast-1a"
   device '/dev/xvdb'
   volume_type 'standard'

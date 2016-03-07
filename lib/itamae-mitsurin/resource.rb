@@ -17,6 +17,8 @@ require 'itamae-mitsurin/resource/user'
 require 'itamae-mitsurin/resource/group'
 require 'itamae-mitsurin/resource/gem_package'
 require 'itamae-mitsurin/resource/aws_ebs_volume'
+require 'itamae-mitsurin/resource/aws_route53_rrset'
+require 'itamae-mitsurin/resource/aws_route53_rrset_alias'
 
 module ItamaeMitsurin
   module Resource
