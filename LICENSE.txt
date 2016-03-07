@@ -1,6 +1,6 @@
 Copyright (c) 2016 Akihiro Kamiyama
 
-Ripped out of Itamae 1.9.3, Itamae-plugin-resource-aws 0.1 and modified.
+Ripped out of Itamae, Itamae-plugin-resource-aws 0.1 and modified.
 Copyright (c) 2013-2015 Ryota Arai
 Copyright (c) 2015 Gosuke Miyashita
 

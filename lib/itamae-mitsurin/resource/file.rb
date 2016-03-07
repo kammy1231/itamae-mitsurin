@@ -50,7 +50,7 @@ module ItamaeMitsurin
 
         super
 
-        if @temppath
+        if @temppath && @current_action != :delete
           compare_file
         end
       end
@@ -96,13 +96,17 @@ module ItamaeMitsurin
         if attributes.mode
           run_specinfra(:change_file_mode, @temppath, attributes.mode)
         else
-          run_command(['chmod', '--reference', attributes.path, @temppath])
+          mode = run_specinfra(:get_file_mode, attributes.path).stdout.chomp
+          run_specinfra(:change_file_mode, @temppath, mode)
         end
 
         if attributes.owner || attributes.group
           run_specinfra(:change_file_owner, @temppath, attributes.owner, attributes.group)
         else
-          run_command(['chown', '--reference', attributes.path, @temppath])
+          owner = run_specinfra(:get_file_owner_user, attributes.path).stdout.chomp
+          group = run_specinfra(:get_file_owner_group, attributes.path).stdout.chomp
+          run_specinfra(:change_file_owner, @temppath, owner)
+          run_specinfra(:change_file_group, @temppath, group)
         end
 
         unless check_command(["diff", "-q", @temppath, attributes.path])
