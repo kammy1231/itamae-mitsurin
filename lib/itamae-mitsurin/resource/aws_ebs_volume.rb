@@ -2,85 +2,92 @@ require 'itamae-mitsurin'
 require 'itamae-mitsurin/mitsurin'
 
 module ItamaeMitsurin
-  module Resource
-    class AwsEbsVolume < Base
+    module Resource
+      class AwsEbsVolume < Base
+        define_attribute :action, default: :create
+        define_attribute :name, type: String, default_name: true
+        define_attribute :region, type: String
+        define_attribute :availability_zone, type: String
+        define_attribute :device, type: String
+        define_attribute :instance_id, type: String
+        define_attribute :volume_type, type: String
+        define_attribute :size, type: Integer
 
-      define_attribute :region, type: String
-      define_attribute :action, default: :create
-      define_attribute :name, type: String, default_name: true
-      define_attribute :availability_zone, type: String
-      define_attribute :device, type: String
-      define_attribute :instance_id, type: String
-      define_attribute :volume_type, type: String
-      define_attribute :size, type: Integer
-
-      def action_create(options)
-        Aws.config[:region] = attributes.region
-        ec2 = ::Aws::EC2::Client.new
-        volumes = ec2.describe_volumes(
-          {
-            filters: [
-              {
-                name: 'tag:Name',
-                values: [ attributes.name ],
-              },
-            ],
-          }
-        ).volumes
-
-        if volumes.empty?
-          @volume = ec2.create_volume(
-            size: attributes[:size], # attributes.size returns the size of attributes hash
-            availability_zone: attributes.availability_zone,
-            volume_type: attributes.volume_type,
-          )
-
-          ec2.create_tags(
+        def action_create(options)
+          ec2 = ::Aws::EC2::Client.new(region: attributes.region)
+          volumes = ec2.describe_volumes(
             {
-              resources: [ @volume.volume_id ],
-              tags: [
+              filters: [
                 {
-                  key: 'Name',
-                  value: attributes.name,
+                  name: 'tag:Name',
+                  values: [ attributes.name ],
                 },
               ],
             }
-          )
+          ).volumes
 
-          updated!
-          sleep(3)
-        else
-          @volume = volumes[0]
-        end
-      end
+          if volumes.empty?
+            @volume = ec2.create_volume(
+              size: attributes[:size], # attributes.size returns the size of attributes hash
+              availability_zone: attributes.availability_zone,
+              volume_type: attributes.volume_type,
+            )
+            ec2.wait_until(:volume_available, volume_ids: [ @volume.volume_id ])
 
-      def action_attach(options)
-        Aws.config[:region] = attributes.region
-        ec2 = ::Aws::EC2::Client.new
-        volumes = ec2.describe_volumes(
-          {
-            filters: [
+            ec2.create_tags(
               {
-                name: 'tag:Name',
-                values: [ attributes.name ],
-              },
-            ],
-          }
-        ).volumes
+                resources: [ @volume.volume_id ],
+                tags: [
+                  {
+                    key: 'Name',
+                    value: attributes.name,
+                  },
+                ],
+              }
+            )
 
-        unless volumes.empty?
-          @volume = ec2.attach_volume({
-            volume_id: @volume.volume_id,
-            instance_id: attributes.instance_id,
-            device: attributes.device
-          })
+            ItamaeMitsurin.logger.color(:green) do
+              ItamaeMitsurin.info "create volume compleated!"
+            end
+            updated!
+          else
+            @volume = volumes[0]
+          end
 
-          updated!
-        else
-          @volume = volumes[0]
+        end
+
+        def action_attach(options)
+          ec2 = ::Aws::EC2::Client.new(region: attributes.region)
+          volumes = ec2.describe_volumes(
+            {
+              filters: [
+                {
+                  name: 'tag:Name',
+                  values: [ attributes.name ],
+                },
+              ],
+            }
+          ).volumes
+
+          unless volumes.empty?
+            @volume = ec2.attach_volume({
+              volume_id: @volume.volume_id,
+              instance_id: attributes.instance_id,
+              device: attributes.device
+            })
+            ec2.wait_until(:volume_in_use, volume_ids: [ @volume.volume_id ])
+
+
+            ItamaeMitsurin.logger.color(:green) do
+              ItamaeMitsurin.info "attach volume compleated!"
+            end
+            updated!
+          else
+            @volume = volumes[0]
+          end
+
         end
       end
     end
-  end
 end
 
