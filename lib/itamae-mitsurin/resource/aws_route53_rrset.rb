@@ -18,10 +18,9 @@ module ItamaeMitsurin
         define_attribute :traffic_policy_instance_id, type: String
 
         def pre_action
-          Aws.config[:region] = attributes.region
-          route53 = ::Aws::Route53::Client.new
+          @route53 = ::Aws::Route53::Client.new(region: attributes.region)
 
-          @record = route53.list_resource_record_sets({
+          @record = @route53.list_resource_record_sets({
               hosted_zone_id: attributes.hosted_zone_id,
               start_record_name: attributes.name,
               start_record_type: attributes.type,
@@ -66,29 +65,26 @@ module ItamaeMitsurin
         end
 
         def action_create(options)
-          Aws.config[:region] = attributes.region
-          route53 = ::Aws::Route53::Client.new
-
           unless @record[0][0][0] == attributes.name
-            resp = route53.change_resource_record_sets(@rrset_hash)
+            resp = @route53.change_resource_record_sets(@rrset_hash)
+            ItamaeMitsurin.logger.debug "#{resp}"
+            ItamaeMitsurin.logger.info "created record #{attributes.name}"
             updated!
           end
         end
 
         def action_upsert(options)
-          Aws.config[:region] = attributes.region
-          route53 = ::Aws::Route53::Client.new
-
-          resp = route53.change_resource_record_sets(@rrset_hash)
+          resp = @route53.change_resource_record_sets(@rrset_hash)
+          ItamaeMitsurin.logger.debug "#{resp}"
+          ItamaeMitsurin.logger.info "upserted record #{attributes.name}"
           updated!
         end
 
         def action_delete(options)
-          Aws.config[:region] = attributes.region
-          route53 = ::Aws::Route53::Client.new
-
           if @record[0][0][0] == attributes.name
-            resp = route53.change_resource_record_sets(@rrset_hash)
+            resp = @route53.change_resource_record_sets(@rrset_hash)
+            ItamaeMitsurin.logger.debug "#{resp}"
+            ItamaeMitsurin.logger.info "deleted record #{attributes.name}"
             updated!
           end
         end
