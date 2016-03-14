@@ -25,11 +25,11 @@ Rake::TestTask.new
 #  t.test_files = FileList['test/test*.rb'].exclude('test/test_assoccoords.rb')
 #end
 
-#Rake::ExtensionTask.new do |ext|
-#  ext.name = 'itamae-mitsurin'
-#  ext.ext_dir = 'ext/'
-#  ext.lib_dir = 'lib/'
-#end
+Rake::ExtensionTask.new do |ext|
+  ext.name = 'itamae-mitsurin'
+  ext.ext_dir = 'ext/'
+  ext.lib_dir = 'lib/'
+end
 
 Rake::PackageTask.new('itamae-mitsurin', "#{version}") do |t|
   t.need_tar_gz = true

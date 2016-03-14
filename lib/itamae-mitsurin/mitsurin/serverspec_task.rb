@@ -7,6 +7,8 @@ module Itamae
   module Mitsurin
     class ServerspecTask
 
+      TaskBase = ItamaeMitsurin::Mitsurin::TaskBase
+
       namespace :spec do
         all = []
         Dir.glob("tmp-nodes/**/*.json").each do |node_file|
