@@ -9,7 +9,7 @@ module ItamaeMitsurin
         define_attribute :action, default: :create
         define_attribute :name, type: String, default_name: true
         define_attribute :hosted_zone_id, type: String, required: true
-        define_attribute :type, type: String, required: true, required: true
+        define_attribute :type, type: String, required: true
         define_attribute :weight, type: Integer
         define_attribute :failover, type: String
         define_attribute :ttl, type: Integer
