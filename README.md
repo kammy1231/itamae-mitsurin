@@ -33,6 +33,8 @@ aws_ebs_volume "ebs_name" do
   instance_id 'i-xxxxxxx'
 end
 ```
+## Wiki
+- [itamae-mitsurin wiki](https://github.com/kammy1231/itamae-mitsurin/wiki/Home)
 
 ## Contributing
 
