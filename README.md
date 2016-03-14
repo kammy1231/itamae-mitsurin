@@ -34,7 +34,7 @@ aws_ebs_volume "ebs_name" do
 end
 ```
 ## Wiki
-- [itamae-mitsurin wiki](https://github.com/kammy1231/itamae-mitsurin/wiki/Home)
+- [itamae-mitsurin wiki](https://github.com/kammy1231/itamae-mitsurin/wiki/itamae-mitsurin-wiki)
 
 ## Contributing
 
