@@ -13,8 +13,8 @@ Customized version of Itamae and plugin
 
 ```
 $ gem install itamae-mitsurin
-$ mkdir project_dir
-$ cd project_dir
+$ mkdir [project_dir]
+$ cd [project_dir]
 $ manaita init
 ```
 
@@ -33,8 +33,13 @@ aws_ebs_volume "ebs_name" do
   instance_id 'i-xxxxxxx'
 end
 ```
+
 ## Wiki
 - [itamae-mitsurin wiki](https://github.com/kammy1231/itamae-mitsurin/wiki/itamae-mitsurin-wiki)
+
+## Reference
+- [itamae wiki](https://github.com/itamae-kitchen/itamae/wiki)
+- [Serverspec host_inventory](http://serverspec.org/host_inventory.html)
 
 ## Contributing
 
