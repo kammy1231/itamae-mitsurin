@@ -22,7 +22,7 @@ module ItamaeMitsurin
         def pre_action
           @route53 = ::Aws::Route53::Client.new(region: attributes.region)
 
-          @record = route53.list_resource_record_sets({
+          @record = @route53.list_resource_record_sets({
               hosted_zone_id: attributes.hosted_zone_id,
               start_record_name: attributes.name,
               start_record_type: attributes.type,
@@ -67,7 +67,7 @@ module ItamaeMitsurin
 
         def action_create(options)
           unless @record[0][0][0] == attributes.name
-            resp = route53.change_resource_record_sets(@rrset_hash)
+            resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
             ItamaeMitsurin.logger.info "created record #{attributes.name}"
             updated!
@@ -75,7 +75,7 @@ module ItamaeMitsurin
         end
 
         def action_upsert(options)
-          resp = route53.change_resource_record_sets(@rrset_hash)
+          resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
             ItamaeMitsurin.logger.info "upserted record #{attributes.name}"
           updated!
@@ -83,7 +83,7 @@ module ItamaeMitsurin
 
         def action_delete(options)
           if @record[0][0][0] == attributes.name
-            resp = route53.change_resource_record_sets(@rrset_hash)
+            resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
             ItamaeMitsurin.logger.info "deleted record #{attributes.name}"
             updated!
