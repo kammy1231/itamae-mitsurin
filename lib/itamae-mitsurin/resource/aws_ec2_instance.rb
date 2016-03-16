@@ -5,12 +5,12 @@ module ItamaeMitsurin
   module Resource
     class AwsEc2Instance < Base
 
-      define_attribute :region, type: String
+      define_attribute :region, type: String, required: true
       define_attribute :action, default: :create
       define_attribute :dry_run, type: [TrueClass, FalseClass], default_name: false
       define_attribute :name, type: String, default_name: true
       define_attribute :image_id, type: String, required: true
-      define_attribute :key_name, type: String, required: true
+      define_attribute :key_name, type: String
       define_attribute :security_group_ids, type: Array
       define_attribute :user_data, type: String
       define_attribute :instance_type, type: String, required: true
@@ -18,11 +18,11 @@ module ItamaeMitsurin
       define_attribute :ramdisk_id, type: String
       define_attribute :device_name, type: String
       define_attribute :snapshot_id, type: String
-      define_attribute :volume_size, type: Integer
+      define_attribute :volume_size, type: Integer, required: true
       define_attribute :delete_on_termination, type: [TrueClass, FalseClass], default: true
       define_attribute :volume_type, type: String, default: "gp2"
       define_attribute :iops, type: Integer
-      define_attribute :encrypted, type: [TrueClass, FalseClass]
+      define_attribute :encrypted, type: TrueClass
       define_attribute :monitoring, type: [TrueClass, FalseClass], default: false
       define_attribute :subnet_id, type: String
       define_attribute :disable_api_termination, type: [TrueClass, FalseClass], default: false
@@ -32,7 +32,7 @@ module ItamaeMitsurin
       define_attribute :additional_info, type: String
       define_attribute :network_interface_id, type: String
       define_attribute :device_index, type: String
-      define_attribute :subnet_id, type: String
+      define_attribute :subnet_id, type: String, required: true
       define_attribute :private_ip_address, type: String
       define_attribute :groups, type: Array
       define_attribute :private_ip_address, type: String

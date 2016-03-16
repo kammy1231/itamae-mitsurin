@@ -5,7 +5,7 @@ module ItamaeMitsurin
   module Resource
     class AwsRoute53RrsetAlias < Base
 
-        define_attribute :region, type: String
+        define_attribute :region, type: String, required: true
         define_attribute :action, default: :create
         define_attribute :name, type: String, default_name: true
         define_attribute :type, type: String, required: true
