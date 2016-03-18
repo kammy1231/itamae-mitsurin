@@ -18,6 +18,11 @@ $ cd [project_dir]
 $ manaita init
 ```
 
+- Tips for AmazonLinux
+```
+yum install ruby-devel ruby20-devel gcc-c++ rubygem20-io-console.x86_64
+```
+
 ## Usage AWS Resource
 
 ```ruby
