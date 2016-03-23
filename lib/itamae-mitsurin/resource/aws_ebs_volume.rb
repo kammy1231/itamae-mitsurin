@@ -44,8 +44,8 @@ module ItamaeMitsurin
           })
 
           ItamaeMitsurin.logger.color(:green) do
-          ItamaeMitsurin.info "create volume compleated!"
-        end
+            ItamaeMitsurin.logger.info "create volume compleated!"
+          end
           updated!
         else
           @volume = volumes[0]
@@ -64,18 +64,19 @@ module ItamaeMitsurin
         }).volumes
 
         unless volumes.empty?
-          @volume = ec2.attach_volume({
-            volume_id: @volume.volume_id,
-            instance_id: attributes.instance_id,
-            device: attributes.device
-          })
-        ec2.wait_until(:volume_in_use, volume_ids: [ @volume.volume_id ])
+          if volumes[0][:attachments].empty?
+            @volume = ec2.attach_volume({
+              volume_id: @volume.volume_id,
+              instance_id: attributes.instance_id,
+              device: attributes.device
+            })
+            ec2.wait_until(:volume_in_use, volume_ids: [ @volume.volume_id ])
 
-
-        ItamaeMitsurin.logger.color(:green) do
-        ItamaeMitsurin.info "attach volume compleated!"
-        end
-          updated!
+            ItamaeMitsurin.logger.color(:green) do
+              ItamaeMitsurin.logger.info "attach volume compleated!"
+            end
+            updated!
+          end
         else
           @volume = volumes[0]
         end
