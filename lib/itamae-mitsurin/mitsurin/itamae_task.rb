@@ -118,7 +118,6 @@ module ItamaeMitsurin
             command << command_recipe.join
 
             puts TaskBase.hl.color(%!Run Itamae to \"#{bname}\"!, :red)
-            puts TaskBase.hl.color(%!Role List to \"#{TaskBase.get_roles(node_file).join(", ")}\"!, :blue)
             run_list_noti = []
             command_recipe.each {|c_recipe| run_list_noti << c_recipe.split("/") [2]}
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)

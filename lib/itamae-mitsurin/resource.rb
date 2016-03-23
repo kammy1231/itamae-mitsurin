@@ -45,14 +45,14 @@ module ItamaeMitsurin
         end
       end
 
-      def autoload_plugin_resource(method)
-        begin
-          require "itamae/plugin/resource/#{method}"
-          ::ItamaeMitsurin::Plugin::Resource.const_get(to_camel_case(method.to_s))
-        rescue LoadError, NameError
-          raise Error, "#{method} resource is missing."
-        end
-      end
+      # def autoload_plugin_resource(method)
+      #   begin
+      #     require "itamae/plugin/resource/#{method}"
+      #     ::ItamaeMitsurin::Plugin::Resource.const_get(to_camel_case(method.to_s))
+      #   rescue LoadError, NameError
+      #     raise Error, "#{method} resource is missing."
+      #   end
+      # end
 
       def define_resource(name, klass)
         class_name = to_camel_case(name.to_s)
