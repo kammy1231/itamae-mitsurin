@@ -11,7 +11,12 @@ module ItamaeMitsurin
         Dir.glob("nodes/**/*.json").each do |node_file|
 
           bname = File.basename(node_file, '.json')
-          node_h = JSON.parse(File.read(node_file), symbolize_names: true)
+          begin
+            node_h = JSON.parse(File.read(node_file), symbolize_names: true)
+          rescue JSON::ParserError => e
+            puts e.class.to_s + ", " + e.backtrace[0].to_s
+            puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
+          end
 
           desc "Itamae to #{bname}"
           task node_h[:environments][:hostname].split(".")[0] do
@@ -25,7 +30,7 @@ module ItamaeMitsurin
               end
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or role error, nodefile:#{node_file} reason:#{e.message}"
+              puts "nodefile or role error, nodefile:#{node_file}, reason:#{e.message}"
             else
               recipes.flatten!
             end
@@ -33,18 +38,19 @@ module ItamaeMitsurin
             # get env attr
             begin
               env_set = node_h[:environments][:set]
+              raise "No environments set error" if env_set.nil?
               env_h = JSON.parse(File.read("environments/#{env_set}.json"), symbolize_names: true)
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or environments error, nodefile:#{node_file} reason:#{e.message}"
+              puts "nodefile or environments error, nodefile:#{node_file}, reason:#{e.message}"
             end
 
             # get recipes attr
             recipe_attr_file = []
             recipes.each do |recipe_h|
-              if recipe_h["#{recipe_h.keys.join}"].nil?
+              if recipe_h["#{recipe_h.keys.join}"] == "default"
                 recipe_attr_file.insert 0,
-                    Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/default.json")
+                    Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/#{recipe_h["#{recipe_h.keys.join}"]}.json")
               else
                 recipe_attr_file <<
                     Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/#{recipe_h["#{recipe_h.keys.join}"]}.json")
@@ -77,7 +83,7 @@ module ItamaeMitsurin
               TaskBase.write_json(bname) {|file| file.puts recipe_env_node_j}
             end
 
-            recipes << {'_base' => nil}
+            recipes << {'_base' => 'default'}
             node_property = JSON.parse(File.read("tmp-nodes/#{bname}.json"), symbolize_names: true)
             node = node_property[:environments][:hostname]
             ssh_user = node_property[:environments][:ssh_user]
@@ -105,13 +111,8 @@ module ItamaeMitsurin
               # recipe load to_command
             command_recipe = []
             recipes.each do |recipe_h|
-              if recipe_h["#{recipe_h.keys.join}"].nil?
-                command_recipe <<
-                    " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/default.rb").join}"
-              else
-                command_recipe <<
-                    " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join}"
-              end
+              command_recipe <<
+                  " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join}"
             end
 
             command_recipe.sort_by! {|item| File.dirname(item)}

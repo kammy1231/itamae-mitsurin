@@ -30,7 +30,7 @@ module ItamaeMitsurin
             if /recipe\[(.+)::(.+)\]/ === recipe
               recipes << {recipe.gsub(/recipe\[(.+)::(.+)\]/, '\1') => recipe.gsub(/recipe\[(.+)::(.+)\]/, '\2')}
             else
-              recipes << {recipe.gsub(/recipe\[(.+)\]/, '\1') => nil}
+              recipes << {recipe.gsub(/recipe\[(.+)\]/, '\1') => 'default'}
             end
           end
           recipes
@@ -42,7 +42,7 @@ module ItamaeMitsurin
             if /recipe\[(.+)::(.+)\]/ === recipe
               recipes << {recipe.gsub(/recipe\[(.+)::(.+)\]/, '\1') => recipe.gsub(/recipe\[(.+)::(.+)\]/, '\2')}
             else
-              recipes << {recipe.gsub(/recipe\[(.+)\]/, '\1') => nil} unless /role\[(.+)\]/ === recipe
+              recipes << {recipe.gsub(/recipe\[(.+)\]/, '\1') => 'default'} unless /role\[(.+)\]/ === recipe
             end
           end
           recipes
