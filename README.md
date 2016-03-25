@@ -13,14 +13,17 @@ Customized version of Itamae and plugin
 
 ```
 $ gem install itamae-mitsurin
-$ mkdir [project_dir]
-$ cd [project_dir]
 $ manaita init
+```
+
+## If you want to use the AWS Resources
+```
+$ aws configure
 ```
 
 - Tips for AmazonLinux
 ```
-yum install ruby-devel ruby20-devel gcc-c++ rubygem20-io-console.x86_64
+yum install ruby-devel ruby20-devel gcc-c++ rubygem20-io-console
 ```
 
 ## Usage AWS Resource
