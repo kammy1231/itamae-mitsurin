@@ -1,18 +1,15 @@
 require 'specinfra'
-require 'json'
-require 'highline'
 require 'specinfra/helper/set'
 require 'itamae-mitsurin/mitsurin/task_base'
 include Specinfra::Helper::Set
 include Rake::DSL if defined? Rake::DSL
 
-module Itamae
+module ItamaeMitsurin
   module Mitsurin
     class ItamaeTask
 
-      set :backend, :exec
-
       namespace :itamae do
+        set :backend, :exec
         branches = Specinfra.backend.run_command('git branch')
         branch = branches.stdout.split("\n").select {|a| /\*/ === a }
         branch = branch.join.gsub(/\* (.+)/, '\1')
@@ -27,9 +24,14 @@ module Itamae
         end
 
         Dir.glob("nodes/#{branch}/*.json").each do |node_file|
-
           bname = File.basename(node_file, '.json')
-          node_h = JSON.parse(File.read(node_file), symbolize_names: true)
+
+          begin
+            node_h = JSON.parse(File.read(node_file), symbolize_names: true)
+          rescue JSON::ParserError => e
+            puts e.class.to_s + ", " + e.backtrace[0].to_s
+            puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
+          end
 
           desc "Itamae to #{bname}"
           task node_h[:environments][:hostname].split(".")[0] do
@@ -43,7 +45,7 @@ module Itamae
               end
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or role error, nodefile:#{node_file} reason:#{e.message}"
+              puts "nodefile or role error, nodefile:#{node_file}, reason:#{e.message}"
             else
               recipes.flatten!
             end
@@ -51,18 +53,19 @@ module Itamae
             # get env attr
             begin
               env_set = node_h[:environments][:set]
+              raise "No environments set error" if env_set.nil?
               env_h = JSON.parse(File.read("environments/#{env_set}.json"), symbolize_names: true)
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or environments error, nodefile:#{node_file} reason:#{e.message}"
+              puts "nodefile or environments error, nodefile:#{node_file}, reason:#{e.message}"
             end
 
-            # get recipe attr
+            # get recipes attr
             recipe_attr_file = []
             recipes.each do |recipe_h|
-              if recipe_h["#{recipe_h.keys.join}"].nil?
+              if recipe_h["#{recipe_h.keys.join}"] == "default"
                 recipe_attr_file.insert 0,
-                    Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/default.json")
+                    Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/#{recipe_h["#{recipe_h.keys.join}"]}.json")
               else
                 recipe_attr_file <<
                     Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/attributes/#{recipe_h["#{recipe_h.keys.join}"]}.json")
@@ -71,31 +74,31 @@ module Itamae
 
             recipe_attr_file.flatten!
 
-            # recipe attr other=env
+            # recipes attr other=env
             recipe_env_h_a = []
             recipe_attr_file.each do |file|
               recipe_h = JSON.parse(File.read(file), symbolize_names: true)
               recipe_env_h_a << recipe_h.deep_merge(env_h)
             end
 
-            # recipe attr other=recipes
+            # recipe attr other=recipes_env
             moto = recipe_env_h_a[0]
             recipe_env_h_a.each {|hash| moto.deep_merge!(hash)}
             recipe_env_h = moto
 
             if recipe_env_h.nil?
-              # node attr other=env
+              # env attr other=node
               node_env_h = env_h.deep_merge(node_h)
               node_env_j = TaskBase.jq node_env_h
               TaskBase.write_json(bname) {|file| file.puts node_env_j}
             else
-              # node attr other=recipe_env
+              # recipe_env attr other=node
               recipe_env_node_h = recipe_env_h.deep_merge(node_h)
               recipe_env_node_j = TaskBase.jq recipe_env_node_h
               TaskBase.write_json(bname) {|file| file.puts recipe_env_node_j}
             end
 
-            recipes << {'_base' => nil}
+            recipes << {'_base' => 'default'}
             node_property = JSON.parse(File.read("tmp-nodes/#{bname}.json"), symbolize_names: true)
             node = node_property[:environments][:hostname]
             ssh_user = node_property[:environments][:ssh_user]
@@ -120,17 +123,13 @@ module Itamae
             command << " --dry-run" if ENV['dry-run'] == "true"
             command << " -l debug" if ENV['debug'] == "true"
 
-            # recipe load to_command
+              # recipe load to_command
             command_recipe = []
             recipes.each do |recipe_h|
-              if recipe_h["#{recipe_h.keys.join}"].nil?
-                command_recipe <<
-                    " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/default.rb").join}"
-              else
-                command_recipe <<
-                    " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join}"
-              end
+              command_recipe <<
+                  " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join("\s")}"
             end
+
             command_recipe.sort_by! {|item| File.dirname(item)}
             command << command_recipe.join
 
