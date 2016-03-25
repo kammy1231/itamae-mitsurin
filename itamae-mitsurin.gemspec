@@ -8,7 +8,10 @@ Gem::Specification.new do |spec|
   spec.version       = ItamaeMitsurin::VERSION
   spec.authors       = ["Akihiro Kamiyama"]
   spec.email         = ["akihiro.vamps@gmail.com"]
-  spec.summary       = %q{Customized version of Itamae and Itamae plugin}
+  spec.summary       = %q{Customized version of Itamae and Itamae plugin.
+configuration management tool like chef.
+Deploy without the agent.
+It can be deployed using the AWS Resources.}
   spec.homepage      = "https://github.com/kammy1231/itamae-mitsurin"
   spec.license       = "MIT"
 
