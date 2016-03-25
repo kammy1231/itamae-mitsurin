@@ -139,13 +139,13 @@ module ItamaeMitsurin
           logger.color(:green) {logger.info "start up to instance #{instance_id}"}
           @ec2.start_instances(instance_ids: instance_id)
           resp = @ec2.wait_until(:instance_running, instance_ids: instance_id) do |w|
-            w.interval = 15
-            w.max_attempts = 60
+            w.interval = 10
+            w.max_attempts = 90
             w.before_wait do |attempts, response|
-              logger.info "wait Initializing..."
+              logger.info "wait initializing..."
             end
           end
-          sleep 60
+          sleep 90
           logger.color(:green) {logger.info "started running instance #{instance_id}"}
 
           updated!
@@ -158,13 +158,13 @@ module ItamaeMitsurin
           @ec2.start_instances(instance_ids: @instance_id)
           ItamaeMitsurin.logger.info "start up to instance #{@instance_id}"
           resp = @ec2.wait_until(:instance_running, instance_ids: @instance_id) do |w|
-            w.interval = 15
-            w.max_attempts = 60
+            w.interval = 10
+            w.max_attempts = 90
             w.before_wait do |attempts, response|
-              logger.info "wait Initializing..."
+              logger.info "wait initializing..."
             end
           end
-          sleep 60
+          sleep 90
           logger.color(:green) {logger.info "started running instance #{@instance_id}"}
 
           updated!
