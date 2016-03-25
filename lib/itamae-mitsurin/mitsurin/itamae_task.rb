@@ -112,7 +112,7 @@ module ItamaeMitsurin
             command_recipe = []
             recipes.each do |recipe_h|
               command_recipe <<
-                  " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join}"
+                  " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join("\s")}"
             end
 
             command_recipe.sort_by! {|item| File.dirname(item)}
