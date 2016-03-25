@@ -1,3 +1,6 @@
+require 'json'
+require 'highline'
+require "tmpdir"
 
 module ItamaeMitsurin
   module Mitsurin
@@ -60,6 +63,16 @@ module ItamaeMitsurin
             yield f
             f.flock File::LOCK_UN
           end
+        end
+
+        def write_tmp_json(filename)
+          path = Dir.mktmpdir("mitsurin-")
+          open("#{path}/#{filename}.json", "w") do |f|
+            f.flock File::LOCK_EX
+            yield f
+            f.flock File::LOCK_UN
+          end
+          path
         end
 
         def hl

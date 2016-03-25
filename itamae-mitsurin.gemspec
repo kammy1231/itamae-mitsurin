@@ -28,6 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_runtime_dependency "json"
   spec.add_runtime_dependency "io-console"
   spec.add_runtime_dependency "bundler"
+  spec.add_runtime_dependency "tempdir"
 
   spec.add_development_dependency "rake-compiler"
   spec.add_development_dependency "rspec", "~> 3.0"

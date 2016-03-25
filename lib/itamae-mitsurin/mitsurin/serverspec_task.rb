@@ -1,5 +1,3 @@
-require 'json'
-require 'highline'
 require 'itamae-mitsurin/mitsurin/task_base'
 include Rake::DSL if defined? Rake::DSL
 

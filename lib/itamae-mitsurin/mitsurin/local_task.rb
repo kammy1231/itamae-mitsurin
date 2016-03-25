@@ -1,22 +1,26 @@
 require 'itamae-mitsurin/mitsurin/task_base'
 include Rake::DSL if defined? Rake::DSL
 
+# For AWS Resources
+
 module ItamaeMitsurin
   module Mitsurin
-    class ItamaeTask
-
-      namespace :itamae do
+    class LocalTask
+      namespace :local do
         Dir.glob("nodes/**/*.json").each do |node_file|
-
           bname = File.basename(node_file, '.json')
+
           begin
             node_h = JSON.parse(File.read(node_file), symbolize_names: true)
           rescue JSON::ParserError => e
             puts e.class.to_s + ", " + e.backtrace[0].to_s
             puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
+          else
+            all << node_h[:environments][:hostname].split(".")[0]
+            task :all => all
           end
 
-          desc "Itamae to #{bname}"
+          desc "Local to #{bname}"
           task node_h[:environments][:hostname].split(".")[0] do
             begin
               recipes = []
@@ -73,34 +77,26 @@ module ItamaeMitsurin
               # env attr other=node
               node_env_h = env_h.deep_merge(node_h)
               node_env_j = TaskBase.jq node_env_h
-              TaskBase.write_json(bname) {|file| file.puts node_env_j}
+              path = TaskBase.write_tmp_json(bname) {|file| file.puts node_env_j}
             else
               # recipe_env attr other=node
               recipe_env_node_h = recipe_env_h.deep_merge(node_h)
               recipe_env_node_j = TaskBase.jq recipe_env_node_h
-              TaskBase.write_json(bname) {|file| file.puts recipe_env_node_j}
+              path = TaskBase.write_tmp_json(bname) {|file| file.puts recipe_env_node_j}
             end
 
             recipes << {'_base' => 'default'}
             node_property = JSON.parse(File.read("tmp-nodes/#{bname}.json"), symbolize_names: true)
             node = node_property[:environments][:hostname]
-            ssh_user = node_property[:environments][:ssh_user]
-            ssh_password = node_property[:environments][:ssh_password]
             sudo_password = node_property[:environments][:sudo_password]
-            ssh_port = node_property[:environments][:ssh_port]
-            ssh_key = node_property[:environments][:ssh_key]
 
             ENV['TARGET_HOST'] = node
             ENV['NODE_FILE'] = node_file
-            ENV['SSH_PASSWORD'] = ssh_password
             ENV['SUDO_PASSWORD'] = sudo_password
 
-            command = "bundle exec itamae ssh"
+            command = "bundle exec itamae local"
             command << " -h #{node}"
-            command << " -u #{ssh_user}"
-            command << " -p #{ssh_port}"
-            command << " -i keys/#{ssh_key}" unless ssh_key.nil?
-            command << " -j tmp-nodes/#{bname}.json"
+            command << " -j #{path}/#{bname}.json"
             command << " --shell=bash"
             command << " --ask-password" unless ssh_password.nil?
             command << " --dry-run" if ENV['dry-run'] == "true"
@@ -121,10 +117,19 @@ module ItamaeMitsurin
             command_recipe.each {|c_recipe| run_list_noti << c_recipe.split("/") [2]}
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             puts TaskBase.hl.color(%!#{command}!, :white)
-            st = system command
-            exit 1 unless st
+            begin
+              st = system command
+            rescue Exception => e
+              puts "command error, nodefile:#{node_file}, reason:#{e.message}"
+              puts "#{e.backtrace}"
+            ensure
+              FileUtils.remove_entry_secure path
+              exit 1 unless st
+            end
           end
         end
+        desc "local init all"
+        task :local => 'local:all'
       end
 
     end
