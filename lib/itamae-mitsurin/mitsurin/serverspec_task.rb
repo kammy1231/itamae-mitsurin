@@ -80,7 +80,7 @@ module Itamae
             exit 1 unless st
           end
         desc "Serverspec to all nodes"
-        task :all => 'aws:all'
+        task :all => 'spec:all'
         end
       end
 
