@@ -1,4 +1,11 @@
+### The main itamae task
 require 'itamae-mitsurin/mitsurin/itamae_task'
-#require 'itamae-mitsurin/mitsurin/itamae_with_git_task'
+
+### Change the directory to be read by the current git branch
+# require 'itamae-mitsurin/mitsurin/itamae_with_git_task'
+
+### Itamae task for AWS ec2instnce
 require 'itamae-mitsurin/mitsurin/local_task'
+
+### Test task by Serverspec
 require 'itamae-mitsurin/mitsurin/serverspec_task'
