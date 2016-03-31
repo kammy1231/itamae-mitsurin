@@ -19,6 +19,11 @@ module Itamae
             puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
           end
 
+          node_short = node_attr[:environments][:hostname].split(".")[0]
+          all << node_short
+          desc "Serverspec to all nodes"
+          task :all => all
+
           desc "Spec to #{file_name}"
           task node_attr[:environments][:hostname].split(".")[0] do
 
@@ -45,10 +50,6 @@ module Itamae
             sudo_password = node_attr[:environments][:sudo_password]
             ssh_port = node_attr[:environments][:ssh_port]
             ssh_key = node_attr[:environments][:ssh_key]
-
-            node_short = node_name.split(".")[0]
-            all << node_short
-            task :all => all
 
             desc "Run spec to #{file_name}"
             ENV['TARGET_HOST'] = node_name
@@ -77,8 +78,6 @@ module Itamae
             st = system specs
             exit 1 unless st
           end
-        desc "Serverspec to all nodes"
-        task :all => 'spec:all'
         end
       end
 
