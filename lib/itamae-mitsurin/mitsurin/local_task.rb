@@ -87,7 +87,7 @@ module ItamaeMitsurin
             end
 
             recipes << {'_base' => 'default'}
-            node_property = JSON.parse(File.read("tmp-nodes/#{bname}.json"), symbolize_names: true)
+            node_property = JSON.parse(File.read("#{path}/#{bname}.json"), symbolize_names: true)
             node = node_property[:environments][:hostname]
             sudo_password = node_property[:environments][:sudo_password]
 
