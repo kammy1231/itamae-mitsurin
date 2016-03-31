@@ -8,6 +8,7 @@ module ItamaeMitsurin
     class LocalTask
       namespace :local do
         Dir.glob("nodes/**/*.json").each do |node_file|
+          all = []
           bname = File.basename(node_file, '.json')
 
           begin
