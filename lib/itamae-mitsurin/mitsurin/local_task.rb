@@ -96,7 +96,6 @@ module ItamaeMitsurin
             ENV['SUDO_PASSWORD'] = sudo_password
 
             command = "bundle exec itamae local"
-            command << " -h #{node}"
             command << " -j #{path}/#{bname}.json"
             command << " --shell=bash"
             command << " --dry-run" if ENV['dry-run'] == "true"
