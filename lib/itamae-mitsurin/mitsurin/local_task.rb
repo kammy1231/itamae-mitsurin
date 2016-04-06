@@ -100,6 +100,7 @@ module ItamaeMitsurin
             command << " --shell=bash"
             command << " --dry-run" if ENV['dry-run'] == "true"
             command << " -l debug" if ENV['debug'] == "true"
+            command << " -c logs/local_task.config"
 
               # recipe load to_command
             command_recipe = []

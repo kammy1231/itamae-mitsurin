@@ -78,6 +78,10 @@ module ItamaeMitsurin
         def hl
           HighLine.new
         end
+
+        def handler_logger
+          default = {"handlers"=>[{"type"=>"json", "path"=>"itamae-log.json"}]}
+        end
       end
 
     end

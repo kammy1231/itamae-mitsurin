@@ -15,6 +15,8 @@ module ItamaeMitsurin
       private
 
       def open_file
+        logs_path = @options.values.join
+        @options={"path" => "#{logs_path + '.' + Time.now.strftime("%Y%m%d")}"}
         @f = open(@options.fetch('path'), 'a')
       end
     end
