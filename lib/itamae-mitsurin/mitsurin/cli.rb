@@ -11,7 +11,7 @@ module ItamaeMitsurin
 
       desc "version", "Print version"
       def version
-        puts "shikomi(itamae-mitsurin) v#{ItamaeMitsurin::VERSION}"
+        puts "manaita(itamae-mitsurin) v#{ItamaeMitsurin::VERSION}"
       end
 
       desc "init", "Create a new project"
@@ -46,7 +46,7 @@ module ItamaeMitsurin
       private
       def validate_create_target!(command, target)
         unless CREATE_TARGETS.include?(target)
-          msg = %Q!ERROR: "shikomi #{command}" was called with "#{target}" !
+          msg = %Q!ERROR: "manaita #{command}" was called with "#{target}" !
           msg << "but expected to be in #{CREATE_TARGETS.inspect}"
           fail InvocationError, msg
         end
