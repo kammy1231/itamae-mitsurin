@@ -56,7 +56,7 @@ module ItamaeMitsurin
         raise "Please set '-h <hostname>' or '--vagrant'"
       end
 
-      run(recipe_files, :local, options)
+      run(recipe_files, :ssh, options)
     end
 
     desc "docker RECIPE [RECIPE...]", "Create Docker image"
@@ -69,7 +69,7 @@ module ItamaeMitsurin
         raise "Please specify recipe files."
       end
 
-      run(recipe_files, :local, options)
+      run(recipe_files, :docker, options)
     end
 
     desc "version", "Print version"
