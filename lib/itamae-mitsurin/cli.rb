@@ -23,6 +23,9 @@ module ItamaeMitsurin
       option :shell, type: :string, default: "/bin/sh"
       option :ohai, type: :boolean, default: false, desc: "This option is DEPRECATED and will be unavailable."
       option :profile, type: :string, desc: "[EXPERIMENTAL] Save profiling data", banner: "PATH"
+      option :detailed_exitcode, type: :boolean, default: false, desc: "exit code 0 - The run succeeded with no changes or failures, exit code 1 - The run failed, exit code 2 - The run succeeded, and some resources were changed"
+
+
     end
 
     desc "local RECIPE [RECIPE...]", "Run Itamae locally"
@@ -32,7 +35,7 @@ module ItamaeMitsurin
         raise "Please specify recipe files."
       end
 
-      Runner.run(recipe_files, :local, options)
+      run(recipe_files, :local, options)
     end
 
     desc "ssh RECIPE [RECIPE...]", "Run Itamae via ssh"
@@ -53,7 +56,7 @@ module ItamaeMitsurin
         raise "Please set '-h <hostname>' or '--vagrant'"
       end
 
-      Runner.run(recipe_files, :ssh, options)
+      run(recipe_files, :local, options)
     end
 
     desc "docker RECIPE [RECIPE...]", "Create Docker image"
@@ -66,7 +69,7 @@ module ItamaeMitsurin
         raise "Please specify recipe files."
       end
 
-      Runner.run(recipe_files, :docker, options)
+      run(recipe_files, :local, options)
     end
 
     desc "version", "Print version"
@@ -80,6 +83,13 @@ module ItamaeMitsurin
         if config = options[:config]
           options.merge!(YAML.load_file(config))
         end
+      end
+    end
+
+    def run(recipe_files, backend_type, options)
+      runner = Runner.run(recipe_files, backend_type, options)
+      if options[:detailed_exitcode] && runner.diff?
+        exit 2
       end
     end
   end
