@@ -119,7 +119,13 @@ module ItamaeMitsurin
 
             puts TaskBase.hl.color(%!Run Itamae to \"#{bname}\"!, :red)
             run_list_noti = []
-            command_recipe.each {|c_recipe| run_list_noti << c_recipe.split("/") [2]}
+            command_recipe.each { |c_recipe|
+              unless c_recipe.split("/")[4].split(".")[0] == 'default'
+                run_list_noti << c_recipe.split("/")[2] + "::#{c_recipe.split("/")[4].split(".")[0]}"
+              else
+                run_list_noti << c_recipe.split("/")[2]
+              end
+            }
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             puts TaskBase.hl.color(%!#{command}!, :white)
             st = system command

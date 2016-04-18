@@ -72,7 +72,13 @@ module Itamae
             spec_pattern.sort_by! {|item| File.dirname(item)}
             specs << spec_pattern.join
             run_list_noti = []
-            spec_pattern.each {|c_spec| run_list_noti << c_spec.split("/") [2]}
+            spec_pattern.each { |c_spec|
+              unless c_spec.split("/")[4].split(".")[0] == 'default'
+                run_list_noti << c_spec.split("/")[2] + "::#{c_spec.split("/")[4].split(".")[0]}"
+              else
+                run_list_noti << c_spec.split("/")[2]
+              end
+            }
             puts TaskBase.hl.color(%!Run Serverspec to \"#{node_name}\"!, :red)
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             st = system specs
