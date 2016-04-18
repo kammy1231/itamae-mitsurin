@@ -9,7 +9,7 @@ module ItamaeMitsurin
 
       def event(type, payload = {})
         super
-        @f.puts({'time' => Time.now.iso8601, 'event' => type, 'payload' => payload}.to_json)
+        @f.puts({'time' => Time.now.iso8601, 'event' => type, 'payload' => payload}.to_s.encode.to_json)
       end
 
       private
