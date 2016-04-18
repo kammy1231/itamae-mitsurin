@@ -73,8 +73,8 @@ module Itamae
             specs << spec_pattern.join
             run_list_noti = []
             spec_pattern.each { |c_spec|
-              unless c_spec.split("/")[4].split(".")[0] == 'default'
-                run_list_noti << c_spec.split("/")[2] + "::#{c_spec.split("/")[4].split(".")[0]}"
+              unless c_spec.split("/")[4].split(".")[0] == 'default_spec'
+                run_list_noti << c_spec.split("/")[2] + "::#{c_spec.split("/")[4].split(".")[0].split("_spec")[0]}"
               else
                 run_list_noti << c_spec.split("/")[2]
               end
