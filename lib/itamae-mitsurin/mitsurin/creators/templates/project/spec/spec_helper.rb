@@ -31,3 +31,5 @@ options[:port] = ENV['SSH_PORT']
 set :host, options[:host_name] || host
 set :shell, '/bin/bash'
 set :ssh_options, options
+
+set :request_pty, true
