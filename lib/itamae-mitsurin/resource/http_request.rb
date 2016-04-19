@@ -33,7 +33,7 @@ module ItamaeMitsurin
       #   show_content_diff
       # end
 
-      def fetch_content
+      #def fetch_content
         uri = URI.parse(attributes.url)
         response = nil
         redirects_followed = 0
