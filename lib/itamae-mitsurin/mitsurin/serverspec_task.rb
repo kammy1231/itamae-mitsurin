@@ -16,7 +16,7 @@ module Itamae
             node_attr = JSON.parse(File.read(node_file), symbolize_names: true)
           rescue JSON::ParserError => e
             puts e.class.to_s + ", " + e.backtrace[0].to_s
-            puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
+            puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
           end
 
           node_short = node_attr[:environments][:hostname].split(".")[0]
@@ -37,7 +37,7 @@ module Itamae
               end
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or role error, nodefile:#{node_file} reason:#{e.message}"
+              puts "Node or role error, nodefile:#{node_file} reason:#{e.message}"
               exit 1
             else
               recipes << {'_base' => 'default'}
@@ -65,8 +65,12 @@ module Itamae
             # recipe load to_spec
             spec_pattern = []
             recipes.each do |spec_h|
-              spec_pattern <<
-                " #{Dir.glob("site-cookbooks/**/#{spec_h.keys.join}/spec/#{spec_h["#{spec_h.keys.join}"]}_spec.rb").join("\s")}"
+              target_spec = "site-cookbooks/**/#{spec_h.keys.join}/spec/#{spec_h["#{spec_h.keys.join}"]}_spec.rb"
+              unless File.exists?("#{Dir.glob(target_spec).join}")
+                ex_recipe = spec_h.to_s.gsub('=>', '::').gsub('"', '')
+                raise "Spec load error, nodefile:#{node_file}, reason:Not exist the spec #{ex_recipe}"
+              end
+              spec_pattern << " #{Dir.glob(target_spec).join("\s")}"
             end
 
             spec_pattern.sort_by! {|item| File.dirname(item)}
@@ -79,6 +83,7 @@ module Itamae
                 run_list_noti << c_spec.split("/")[2]
               end
             }
+
             puts TaskBase.hl.color(%!Run Serverspec to \"#{node_name}\"!, :red)
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             st = system specs

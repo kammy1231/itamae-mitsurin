@@ -15,7 +15,7 @@ module ItamaeMitsurin
             node_h = JSON.parse(File.read(node_file), symbolize_names: true)
           rescue JSON::ParserError => e
             puts e.class.to_s + ", " + e.backtrace[0].to_s
-            puts "nodefile error, nodefile:#{node_file}, reason:#{e.message}"
+            puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
           else
             all << node_h[:environments][:hostname].split(".")[0]
             task :all => all
@@ -33,7 +33,7 @@ module ItamaeMitsurin
               end
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or role error, nodefile:#{node_file}, reason:#{e.message}"
+              puts "Node or role error, nodefile:#{node_file}, reason:#{e.message}"
             else
               recipes.flatten!
             end
@@ -45,7 +45,7 @@ module ItamaeMitsurin
               env_h = JSON.parse(File.read("environments/#{env_set}.json"), symbolize_names: true)
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
-              puts "nodefile or environments error, nodefile:#{node_file}, reason:#{e.message}"
+              puts "Node or environment error, nodefile:#{node_file}, reason:#{e.message}"
             end
 
             # get recipes attr
@@ -105,8 +105,12 @@ module ItamaeMitsurin
               # recipe load to_command
             command_recipe = []
             recipes.each do |recipe_h|
-              command_recipe <<
-                  " #{Dir.glob("site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb").join("\s")}"
+              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb"
+              unless File.exists?("#{Dir.glob(target_recipe).join}")
+                ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
+                raise "Recipe load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_recipe}"
+              end
+              command_recipe << " #{Dir.glob(target_recipe).join("\s")}"
             end
 
             command_recipe.sort_by! {|item| File.dirname(item)}
@@ -121,12 +125,13 @@ module ItamaeMitsurin
                 run_list_noti << c_recipe.split("/")[2]
               end
             }
+
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             puts TaskBase.hl.color(%!#{command}!, :white)
             begin
               st = system command
             rescue Exception => e
-              puts "command error, nodefile:#{node_file}, reason:#{e.message}"
+              puts "Command error, nodefile:#{node_file}, reason:#{e.message}"
               puts "#{e.backtrace}"
             ensure
               FileUtils.remove_entry_secure path
