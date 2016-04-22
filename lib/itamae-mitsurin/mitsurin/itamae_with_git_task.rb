@@ -13,15 +13,7 @@ module ItamaeMitsurin
         branches = Specinfra.backend.run_command('git branch')
         branch = branches.stdout.split("\n").select {|a| /\*/ === a }
         branch = branch.join.gsub(/\* (.+)/, '\1')
-        if branch == 'staging'
-          branch = 'staging/**'
-        elsif branch == 'master'
-          branch = 'production/**'
-        else
-          all = Dir.entries("nodes/")
-          all.delete_if {|d| /(^\.|staging|production|.json)/ === d }
-          branch = "{#{all.join(",")}}/**"
-        end
+        branch << '/**'
 
         Dir.glob("nodes/#{branch}/*.json").each do |node_file|
           bname = File.basename(node_file, '.json')
@@ -147,6 +139,7 @@ module ItamaeMitsurin
                 run_list_noti << c_recipe.split("/")[2]
               end
             }
+
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             puts TaskBase.hl.color(%!#{command}!, :white)
             st = system command
