@@ -121,7 +121,7 @@ module ItamaeMitsurin
             command << " --ask-password" unless ssh_password.nil?
             command << " --dry-run" if ENV['dry-run'] == "true"
             command << " -l debug" if ENV['debug'] == "true"
-            command << " -c logs/config/itamae_with_git_task.config"
+            command << " -c logs/config/itamae_with_target_task.config"
 
               # recipe load to_command
             command_recipe = []
