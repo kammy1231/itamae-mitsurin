@@ -10,10 +10,9 @@ module ItamaeMitsurin
         define_attribute :name, type: String, default_name: true
         define_attribute :hosted_zone_id, type: String, required: true
         define_attribute :type, type: String, required: true
-        define_attribute :weight, type: Integer
         define_attribute :failover, type: String
         define_attribute :ttl, type: Integer
-        define_attribute :value, type: String, required: true
+        define_attribute :value, type: [String, Array], required: true
         define_attribute :health_check_id, type: String
         define_attribute :traffic_policy_instance_id, type: String
 
@@ -46,7 +45,6 @@ module ItamaeMitsurin
                     name: attributes.name,
                     type: attributes.type,
                     set_identifier: set_identifier,
-                    weight: attributes.weight,
                     failover: attributes.failover,
                     ttl: attributes.ttl,
                     resource_records: [
@@ -62,13 +60,25 @@ module ItamaeMitsurin
               },
             }
 
+          resource_records = []
+          if attributes.value.class == String
+            resource_records = Aws::Route53::Types::ResourceRecord.new(value: attributes.value).orig_to_h
+          elsif attributes.value.class == Array
+            attributes.value.each do |v|
+              resource_records << Aws::Route53::Types::ResourceRecord.new(value: v).orig_to_h
+            end
+          end
+
+          @rrset_hash[:change_batch][:changes][0][:resource_record_set][:resource_records] = resource_records
         end
 
         def action_create(options)
-          unless @record[0][0][0] == attributes.name
+          unless /#{attributes.name}/ === @record[0][0][0]
             resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
-            ItamaeMitsurin.logger.info "created record #{attributes.name}"
+            ItamaeMitsurin.logger.color(:green) do
+              ItamaeMitsurin.logger.info "aws_route53_rrset[#{attributes.name}] created record"
+            end
             updated!
           end
         end
@@ -76,15 +86,19 @@ module ItamaeMitsurin
         def action_upsert(options)
           resp = @route53.change_resource_record_sets(@rrset_hash)
           ItamaeMitsurin.logger.debug "#{resp}"
-          ItamaeMitsurin.logger.info "upserted record #{attributes.name}"
+          ItamaeMitsurin.logger.color(:green) do
+            ItamaeMitsurin.logger.info "aws_route53_rrset[#{attributes.name}] upserted record"
+          end
           updated!
         end
 
         def action_delete(options)
-          if @record[0][0][0] == attributes.name
+          if /#{attributes.name}/ === @record[0][0][0]
             resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
-            ItamaeMitsurin.logger.info "deleted record #{attributes.name}"
+            ItamaeMitsurin.logger.color(:green) do
+              ItamaeMitsurin.logger.info "aws_route53_rrset[#{attributes.name}] deleted record"
+            end
             updated!
           end
         end
