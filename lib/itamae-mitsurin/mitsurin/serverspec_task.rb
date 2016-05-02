@@ -65,12 +65,14 @@ module Itamae
             # recipe load to_spec
             spec_pattern = []
             recipes.each do |spec_h|
-              target_spec = "site-cookbooks/**/#{spec_h.keys.join}/spec/#{spec_h["#{spec_h.keys.join}"]}_spec.rb"
-              unless File.exists?("#{Dir.glob(target_spec).join}")
-                ex_recipe = spec_h.to_s.gsub('=>', '::').gsub('"', '')
-                raise "Spec load error, nodefile:#{node_file}, reason:Not exist the spec #{ex_recipe}"
+              target_spec = "site-cookbooks/**/#{recipe_h.keys.join}/spec/#{recipe_h[recipe_h.keys.join]}_spec.rb"
+              Dir.glob(target_spec).join("\s").split.each do |target|
+                unless File.exists?(target)
+                  ex_spec = spec_h.to_s.gsub('=>', '::').gsub('"', '')
+                  raise "Spec load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_spec}"
+                end
+                spec_pattern << " #{target}"
               end
-              spec_pattern << " #{Dir.glob(target_spec).join("\s")}"
             end
 
             spec_pattern.sort_by! {|item| File.dirname(item)}

@@ -119,12 +119,14 @@ module ItamaeMitsurin
               # recipe load to_command
             command_recipe = []
             recipes.each do |recipe_h|
-              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h["#{recipe_h.keys.join}"]}.rb"
-              unless File.exists?("#{Dir.glob(target_recipe).join}")
-                ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
-                raise "Recipe load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_recipe}"
+              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h[recipe_h.keys.join]}.rb"
+              Dir.glob(target_recipe).join("\s").split.each do |target|
+                unless File.exists?(target)
+                  ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
+                  raise "Recipe load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_recipe}"
+                end
+                command_recipe << " #{target}"
               end
-              command_recipe << " #{Dir.glob(target_recipe).join("\s")}"
             end
 
             command_recipe.sort_by! {|item| File.dirname(item)}
