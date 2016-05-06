@@ -6,6 +6,7 @@ module ItamaeMitsurin
     class ServerspecWithTargetTask
 
       namespace :spec do
+        all = []
         if (ARGV[0] == '-T' || ARGV[0] == '--tasks') && ARGV[1] != nil
           if File.exists?("nodes/#{ARGV[1]}")
           project_h = {:project => ARGV[1]}
@@ -31,6 +32,11 @@ module ItamaeMitsurin
             puts e.class.to_s + ", " + e.backtrace[0].to_s
             puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
           end
+
+          node_short = node_attr[:environments][:hostname].split(".")[0]
+          all << node_short
+          desc "Serverspec to all nodes"
+          task :all => all
 
           desc "Serverspec to #{bname}"
           task node_h[:environments][:hostname].split(".")[0] do
