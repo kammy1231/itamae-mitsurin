@@ -33,7 +33,7 @@ module ItamaeMitsurin
             puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
           end
 
-          node_short = node_attr[:environments][:hostname].split(".")[0]
+          node_short = node_h[:environments][:hostname].split(".")[0]
           all << node_short
           desc "Serverspec to all nodes"
           task :all => all
