@@ -3,9 +3,9 @@ include Rake::DSL if defined? Rake::DSL
 
 module ItamaeMitsurin
   module Mitsurin
-    class ItamaeWithTargetTask
+    class ServerspecWithTargetTask
 
-      namespace :itamae do
+      namespace :spec do
         if (ARGV[0] == '-T' || ARGV[0] == '--tasks') && ARGV[1] != nil
           if File.exists?("nodes/#{ARGV[1]}")
           project_h = {:project => ARGV[1]}
@@ -32,7 +32,7 @@ module ItamaeMitsurin
             puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
           end
 
-          desc "Itamae to #{bname}"
+          desc "Serverspec to #{bname}"
           task node_h[:environments][:hostname].split(".")[0] do
             begin
               recipes = []
@@ -107,31 +107,24 @@ module ItamaeMitsurin
             ssh_key = node_property[:environments][:ssh_key]
             local_ipv4 = node_property[:environments][:local_ipv4]
 
-            ENV['TARGET_HOST'] = node
+            if local_ipv4.nil?
+              ENV['TARGET_HOST'] = node
+            else
+              ENV['TARGET_HOST'] = local_ipv4
+            end
             ENV['NODE_FILE'] = node_file
             ENV['SSH_PASSWORD'] = ssh_password
             ENV['SUDO_PASSWORD'] = sudo_password
+            ENV['SSH_KEY'] = "keys/#{ssh_key}"
+            ENV['SSH_PORT'] = ssh_port
+            ENV['SSH_USER'] = ssh_user
 
-            command = "bundle exec itamae ssh"
-            if local_ipv4.nil?
-              command << " -h #{node}"
-            else
-              command << " -h #{local_ipv4}"
-            end
-            command << " -u #{ssh_user}"
-            command << " -p #{ssh_port}"
-            command << " -i keys/#{ssh_key}" unless ssh_key.nil?
-            command << " -j tmp-nodes/#{bname}.json"
-            command << " --shell=bash"
-            command << " --ask-password" unless ssh_password.nil?
-            command << " --dry-run" if ENV['dry-run'] == "true"
-            command << " -l debug" if ENV['debug'] == "true"
-            command << " -c logs/config/itamae_with_target_task.config"
+            command = "bundle exec rspec"
 
-              # recipe load to_command
+            # spec load to_command
             command_recipe = []
             recipes.each do |recipe_h|
-              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h[recipe_h.keys.join]}.rb"
+              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/spec/#{recipe_h[recipe_h.keys.join]}_spec.rb"
               Dir.glob(target_recipe).join("\s").split.each do |target|
                 unless File.exists?(target)
                   ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
@@ -144,7 +137,7 @@ module ItamaeMitsurin
             command_recipe.sort_by! {|item| File.dirname(item)}
             command << command_recipe.join
 
-            puts TaskBase.hl.color(%!Run Itamae to \"#{bname}\"!, :red)
+            puts TaskBase.hl.color(%!Run Spec to \"#{bname}\"!, :red)
             run_list_noti = []
             command_recipe.each { |c_recipe|
               unless c_recipe.split("/")[4].split(".")[0] == 'default'

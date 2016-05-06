@@ -6,7 +6,7 @@ include Rake::DSL if defined? Rake::DSL
 
 module ItamaeMitsurin
   module Mitsurin
-    class ItamaeTask
+    class ItamaeWithGitTask
 
       namespace :itamae do
         set :backend, :exec
