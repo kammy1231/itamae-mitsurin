@@ -105,6 +105,7 @@ module ItamaeMitsurin
             sudo_password = node_property[:environments][:sudo_password]
             ssh_port = node_property[:environments][:ssh_port]
             ssh_key = node_property[:environments][:ssh_key]
+            local_ipv4 = node_property[:environments][:local_ipv4]
 
             ENV['TARGET_HOST'] = node
             ENV['NODE_FILE'] = node_file
@@ -112,7 +113,11 @@ module ItamaeMitsurin
             ENV['SUDO_PASSWORD'] = sudo_password
 
             command = "bundle exec itamae ssh"
-            command << " -h #{node}"
+            if local_ipv4.nil?
+              command << " -h #{node}"
+            else
+              command << " -h #{local_ipv4}"
+            end
             command << " -u #{ssh_user}"
             command << " -p #{ssh_port}"
             command << " -i keys/#{ssh_key}" unless ssh_key.nil?
