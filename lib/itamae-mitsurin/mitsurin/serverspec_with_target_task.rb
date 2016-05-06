@@ -112,7 +112,7 @@ module ItamaeMitsurin
             else
               ENV['TARGET_HOST'] = local_ipv4
             end
-            ENV['NODE_FILE'] = node_file
+            ENV['NODE_FILE'] = "tmp-nodes/#{File.basename(node_file)}"
             ENV['SSH_PASSWORD'] = ssh_password
             ENV['SUDO_PASSWORD'] = sudo_password
             ENV['SSH_KEY'] = "keys/#{ssh_key}"
@@ -140,7 +140,7 @@ module ItamaeMitsurin
             puts TaskBase.hl.color(%!Run Spec to \"#{bname}\"!, :red)
             run_list_noti = []
             command_recipe.each { |c_recipe|
-              unless c_recipe.split("/")[4].split(".")[0] == 'default'
+              unless c_recipe.split("/")[4].split(".")[0] == 'default_spec'
                 run_list_noti << c_recipe.split("/")[2] + "::#{c_recipe.split("/")[4].split(".")[0]}"
               else
                 run_list_noti << c_recipe.split("/")[2]

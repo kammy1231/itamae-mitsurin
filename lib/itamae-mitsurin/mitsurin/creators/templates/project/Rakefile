@@ -14,3 +14,6 @@ require 'itamae-mitsurin/mitsurin/local_task'
 
 ### Test task by Serverspec
 require 'itamae-mitsurin/mitsurin/serverspec_task'
+
+### Test task by Serverspec with target pre
+#require 'itamae-mitsurin/mitsurin/serverspec_with_target_task'
