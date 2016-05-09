@@ -61,15 +61,12 @@ module ItamaeMitsurin
             }
 
           resource_records = []
-          if attributes.value.class == String
-            resource_records = Aws::Route53::Types::ResourceRecord.new(value: attributes.value).orig_to_h
-          elsif attributes.value.class == Array
+          if attributes.value.class == Array
             attributes.value.each do |v|
               resource_records << Aws::Route53::Types::ResourceRecord.new(value: v).orig_to_h
             end
+            @rrset_hash[:change_batch][:changes][0][:resource_record_set][:resource_records] = resource_records
           end
-
-          @rrset_hash[:change_batch][:changes][0][:resource_record_set][:resource_records] = resource_records
         end
 
         def action_create(options)
