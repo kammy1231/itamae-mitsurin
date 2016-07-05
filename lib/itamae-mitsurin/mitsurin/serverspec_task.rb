@@ -62,33 +62,40 @@ module Itamae
 
             specs = "bundle exec rspec"
 
-            # recipe load to_spec
-            spec_pattern = []
-            recipes.each do |spec_h|
-              target_spec = "site-cookbooks/**/#{spec_h.keys.join}/spec/#{spec_h[spec_h.keys.join]}_spec.rb"
-              Dir.glob(target_spec).join("\s").split.each do |target|
+            # Pass to read the spec command
+            command_recipe = []
+            recipes.each do |recipe_h|
+              target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/spec/#{recipe_h[recipe_h.keys.join]}_spec.rb"
+              if Dir.glob(target_recipe).empty?
+                raise "Spec load error, nodefile: #{node_file}, reason: Does not exist " +
+                      recipe_h.keys.join + '::' + recipe_h.values.join
+              end
+              Dir.glob(target_recipe).join("\s").split.each do |target|
                 unless File.exists?(target)
-                  ex_spec = spec_h.to_s.gsub('=>', '::').gsub('"', '')
-                  raise "Spec load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_spec}"
+                  ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
+                  raise "Spec load error, nodefile: #{node_file}, reason: Does not exist #{ex_recipe}"
                 end
-                spec_pattern << " #{target}"
+                command_recipe << " #{target}"
               end
             end
 
-            spec_pattern.sort_by! {|item| File.dirname(item)}
-            specs << spec_pattern.join
+            command_recipe.sort_by! {|item| File.dirname(item)}
+            command << command_recipe.join
+
+            puts TaskBase.hl.color(%!Run Serverspec to "#{bname}"!, :red)
             run_list_noti = []
-            spec_pattern.each { |c_spec|
-              unless c_spec.split("/")[4].split(".")[0] == 'default_spec'
-                run_list_noti << c_spec.split("/")[2] + "::#{c_spec.split("/")[4].split(".")[0].split("_spec")[0]}"
+            command_recipe.each { |c_recipe|
+              unless c_recipe.split('/')[4].split('.')[0] == 'default_spec'
+                subspec = c_recipe.split('/')[4].split('.')[0].split('_')[0..-2].join('_')
+                run_list_noti << c_recipe.split('/')[2] + "::#{subspec}"
               else
-                run_list_noti << c_spec.split("/")[2]
+                run_list_noti << c_recipe.split('/')[2]
               end
             }
 
-            puts TaskBase.hl.color(%!Run Serverspec to \"#{node_name}\"!, :red)
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
-            st = system specs
+            puts TaskBase.hl.color(%!#{command}!, :white)
+            st = system command
             exit 1 unless st
           end
         end

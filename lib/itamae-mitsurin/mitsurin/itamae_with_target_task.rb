@@ -134,23 +134,27 @@ module ItamaeMitsurin
             command << " -l debug" if ENV['debug'] == "true"
             command << " -c logs/config/itamae_with_target_task.config"
 
-              # recipe load to_command
+            # Pass to read the recipe command
             command_recipe = []
             recipes.each do |recipe_h|
               target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h[recipe_h.keys.join]}.rb"
+            if Dir.glob(target_recipe).empty?
+              raise "Recipe load error, nodefile: #{node_file}, reason: Does not exist " +
+                    recipe_h.keys.join + '::' +recipe_h.values.join
+              end
               Dir.glob(target_recipe).join("\s").split.each do |target|
                 unless File.exists?(target)
                   ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
-                  raise "Recipe load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_recipe}"
+                  raise "Recipe load error, nodefile:#{node_file}, reason: Does not exist #{ex_recipe}"
                 end
                 command_recipe << " #{target}"
               end
             end
 
-            command_recipe.sort_by! {|item| File.dirname(item)}
+            command_recipe.sort_by! {|item| File.dirname(item) }
             command << command_recipe.join
 
-            puts TaskBase.hl.color(%!Run Itamae to \"#{bname}\"!, :red)
+            puts TaskBase.hl.color(%!Run Itamae to "#{bname}"!, :red)
             run_list_noti = []
             command_recipe.each { |c_recipe|
               unless c_recipe.split("/")[4].split(".")[0] == 'default'

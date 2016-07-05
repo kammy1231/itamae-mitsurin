@@ -127,14 +127,18 @@ module ItamaeMitsurin
 
             command = "bundle exec rspec"
 
-            # spec load to_command
+            # Pass to read the spec command
             command_recipe = []
             recipes.each do |recipe_h|
               target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/spec/#{recipe_h[recipe_h.keys.join]}_spec.rb"
+              if Dir.glob(target_recipe).empty?
+                raise "Spec load error, nodefile: #{node_file}, reason: Does not exist " +
+                      recipe_h.keys.join + '::' + recipe_h.values.join
+              end
               Dir.glob(target_recipe).join("\s").split.each do |target|
                 unless File.exists?(target)
                   ex_recipe = recipe_h.to_s.gsub('=>', '::').gsub('"', '')
-                  raise "Recipe load error, nodefile:#{node_file}, reason:Not exist the recipe #{ex_recipe}"
+                  raise "Spec load error, nodefile: #{node_file}, reason: Does not exist #{ex_recipe}"
                 end
                 command_recipe << " #{target}"
               end
@@ -143,13 +147,14 @@ module ItamaeMitsurin
             command_recipe.sort_by! {|item| File.dirname(item)}
             command << command_recipe.join
 
-            puts TaskBase.hl.color(%!Run Spec to \"#{bname}\"!, :red)
+            puts TaskBase.hl.color(%!Run Serverspec to "#{bname}"!, :red)
             run_list_noti = []
             command_recipe.each { |c_recipe|
-              unless c_recipe.split("/")[4].split(".")[0] == 'default_spec'
-                run_list_noti << c_recipe.split("/")[2] + "::#{c_recipe.split("/")[4].split(".")[0]}"
+              unless c_recipe.split('/')[4].split('.')[0] == 'default_spec'
+                subspec = c_recipe.split('/')[4].split('.')[0].split('_')[0..-2].join('_')
+                run_list_noti << c_recipe.split('/')[2] + "::#{subspec}"
               else
-                run_list_noti << c_recipe.split("/")[2]
+                run_list_noti << c_recipe.split('/')[2]
               end
             }
 
