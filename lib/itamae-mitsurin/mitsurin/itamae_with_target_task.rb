@@ -138,9 +138,9 @@ module ItamaeMitsurin
             command_recipe = []
             recipes.each do |recipe_h|
               target_recipe = "site-cookbooks/**/#{recipe_h.keys.join}/recipes/#{recipe_h[recipe_h.keys.join]}.rb"
-            if Dir.glob(target_recipe).empty?
-              raise "Recipe load error, nodefile: #{node_file}, reason: Does not exist " +
-                    recipe_h.keys.join + '::' +recipe_h.values.join
+              if Dir.glob(target_recipe).empty?
+                raise "Recipe load error, nodefile: #{node_file}, reason: Does not exist " +
+                      recipe_h.keys.join + '::' +recipe_h.values.join
               end
               Dir.glob(target_recipe).join("\s").split.each do |target|
                 unless File.exists?(target)
