@@ -35,6 +35,7 @@ module ItamaeMitsurin
       unless errors.empty?
         errors.each do |error|
           ItamaeMitsurin.logger.error "'#{error.position.join('->')}' #{error.message}"
+          ItamaeMitsurin.file_logger.error "'#{error.position.join('->')}' #{error.message}"
         end
         raise ValidationError
       end

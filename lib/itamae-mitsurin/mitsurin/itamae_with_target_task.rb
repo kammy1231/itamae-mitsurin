@@ -9,17 +9,18 @@ module ItamaeMitsurin
         all = []
         if (ARGV[0] == '-T' || ARGV[0] == '--tasks') && ARGV[1] != nil
           if File.exists?("nodes/#{ARGV[1]}")
-          project_h = {:project => ARGV[1]}
-          File.open "Project.json", 'w' do |f|
-            f.flock File::LOCK_EX
-            f.puts project_h.to_json
-            f.flock File::LOCK_UN
-          end
-          puts TaskBase.hl.color "Changed target mode '#{ARGV[1]}'", :green
+            project_h = {:project => ARGV[1]}
+            File.open "Project.json", 'w' do |f|
+              f.flock File::LOCK_EX
+              f.puts project_h.to_json
+              f.flock File::LOCK_UN
+            end
+            puts TaskBase.hl.color "Changed target mode '#{ARGV[1]}'", :green
           else
             raise "Change mode error '#{ARGV[1]}' is not exists"
           end
         end
+
         ret = JSON.parse(File.read("Project.json"))
         target = ret["project"] << '/**'
 
@@ -31,6 +32,7 @@ module ItamaeMitsurin
           rescue JSON::ParserError => e
             puts e.class.to_s + ", " + e.backtrace[0].to_s
             puts "Node error, nodefile:#{node_file}, reason:#{e.message}"
+            TaskBase.file_logger.fatal "Node error, nodefile:#{node_file}, reason:#{e.message}"
           end
 
           node_short = node_h[:environments][:hostname].split(".")[0]
@@ -51,6 +53,7 @@ module ItamaeMitsurin
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
               puts "Node or role error, nodefile:#{node_file}, reason:#{e.message}"
+              TaskBase.file_logger.fatal "Node or role error, nodefile:#{node_file}, reason:#{e.message}"
             else
               recipes.flatten!
             end
@@ -63,6 +66,7 @@ module ItamaeMitsurin
             rescue Exception => e
               puts e.class.to_s + ", " + e.backtrace[0].to_s
               puts "Node or environment error, nodefile:#{node_file}, reason:#{e.message}"
+              TaskBase.file_logger.fatal "Node or environment error, nodefile:#{node_file}, reason:#{e.message}"
             end
 
             # get recipes attr
@@ -132,7 +136,7 @@ module ItamaeMitsurin
             command << " --ask-password" unless ssh_password.nil?
             command << " --dry-run" if ENV['dry-run'] == "true"
             command << " -l debug" if ENV['debug'] == "true"
-            command << " -c logs/config/itamae_with_target_task.config"
+            # command << " -c logs/config/itamae_with_target_task.config"
 
             # Pass to read the recipe command
             command_recipe = []
@@ -155,6 +159,7 @@ module ItamaeMitsurin
             command << command_recipe.join
 
             puts TaskBase.hl.color(%!Run Itamae to "#{bname}"!, :red)
+            TaskBase.file_logger.info(%!Run Itamae to "#{bname}"!)
             run_list_noti = []
             command_recipe.each { |c_recipe|
               unless c_recipe.split("/")[4].split(".")[0] == 'default'
@@ -165,9 +170,12 @@ module ItamaeMitsurin
             }
 
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
+            TaskBase.file_logger.info(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
             puts TaskBase.hl.color(%!#{command}!, :white)
+            TaskBase.file_logger.debug(%!#{command}!)
             st = system command
             exit 1 unless st
+            TaskBase.file_logger.info "itamae_with_target_task end."
           end
         end
       end

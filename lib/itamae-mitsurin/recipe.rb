@@ -66,6 +66,11 @@ module ItamaeMitsurin
           @children.run
           run_delayed_notifications
         end
+
+        ItamaeMitsurin.file_logger.with_indent do
+          @children.run
+          run_delayed_notifications
+        end
       end
     end
 
@@ -83,6 +88,7 @@ module ItamaeMitsurin
 
     def show_banner
       ItamaeMitsurin.logger.info "Recipe: #{@path}"
+      ItamaeMitsurin.file_logger.info "Recipe: #{@path}"
     end
 
     class EvalContext

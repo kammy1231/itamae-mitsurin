@@ -33,6 +33,7 @@ module ItamaeMitsurin
     def validate!
       unless [:delay, :delayed, :immediately].include?(timing)
         ItamaeMitsurin.logger.error "'#{timing}' is not valid notification timing. (Valid option is delayed or immediately)"
+        ItamaeMitsurin.file_logger.error "'#{timing}' is not valid notification timing. (Valid option is delayed or immediately)"
         abort
       end
     end

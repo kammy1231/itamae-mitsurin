@@ -120,8 +120,22 @@ module ItamaeMitsurin
     end
   end
 
+ # @logger = ::Logger.new($stdout).tap do |l|
+ #   l.formatter = ItamaeMitsurin::Logger::Formatter.new
+ # end.extend(ItamaeMitsurin::Logger::Helper)
+
   @logger = ::Logger.new($stdout).tap do |l|
     l.formatter = ItamaeMitsurin::Logger::Formatter.new
+  end.extend(ItamaeMitsurin::Logger::Helper)
+
+  class ItamaeMitsurin::Logger::FileFormatter < ItamaeMitsurin::Logger::Formatter
+    def colorize(str, severity)
+      Time.now.strftime('%Y %m %d %H:%M:%S %z').to_s + str
+    end
+  end
+
+  @file_logger = ::Logger.new('logs/itamae.log', 5, 100 * 1024 * 1024).tap do |l|
+    l.formatter = ItamaeMitsurin::Logger::FileFormatter.new
   end.extend(ItamaeMitsurin::Logger::Helper)
 
   class << self
@@ -131,6 +145,14 @@ module ItamaeMitsurin
 
     def logger=(l)
       @logger = l.extend(ItamaeMitsurin::Logger::Helper)
+    end
+
+    def file_logger
+      @file_logger
+    end
+
+    def file_logger=(l)
+      @file_logger = l.extend(ItamaeMitsurin::Logger::Helper)
     end
   end
 end

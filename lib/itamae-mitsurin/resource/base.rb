@@ -149,6 +149,7 @@ module ItamaeMitsurin
         end
       rescue Backend::CommandExecutionError
         ItamaeMitsurin.logger.error "#{resource_type}[#{resource_name}] Failed."
+        ItamaeMitsurin.file_logger.error "#{resource_type}[#{resource_name}] Failed."
         exit 2
       end
 
@@ -189,6 +190,7 @@ module ItamaeMitsurin
             if runner.dry_run?
               unless respond_to?(method_name)
                 ItamaeMitsurin.logger.error "action #{action.inspect} is unavailable"
+                ItamaeMitsurin.file_logger.error "action #{action.inspect} is unavailable"
               end
             else
               args = [method_name]
@@ -239,12 +241,14 @@ module ItamaeMitsurin
           elsif current_value.nil? && !value.nil?
             ItamaeMitsurin.logger.color :green do
               ItamaeMitsurin.logger.info "#{resource_type}[#{resource_name}] #{key} will be '#{value}'"
+              ItamaeMitsurin.file_logger.info "#{resource_type}[#{resource_name}] #{key} will be '#{value}'"
             end
           elsif current_value == value || value.nil?
             ItamaeMitsurin.logger.debug "#{resource_type}[#{resource_name}] #{key} will not change (current value is '#{current_value}')"
           else
             ItamaeMitsurin.logger.color :green do
               ItamaeMitsurin.logger.info "#{resource_type}[#{resource_name}] #{key} will change from '#{current_value}' to '#{value}'"
+              ItamaeMitsurin.file_logger.info "#{resource_type}[#{resource_name}] #{key} will change from '#{current_value}' to '#{value}'"
             end
           end
         end
@@ -347,9 +351,11 @@ module ItamaeMitsurin
           end
 
           ItamaeMitsurin.logger.info message
+          ItamaeMitsurin.file_logger.info message
 
           if notification.instance_of?(Subscription)
             ItamaeMitsurin.logger.info "(because it subscribes this resource)"
+            ItamaeMitsurin.file_logger.info "(because it subscribes this resource)"
           end
 
           if notification.delayed?
@@ -364,7 +370,13 @@ module ItamaeMitsurin
         return if @verify_commands.empty?
 
         ItamaeMitsurin.logger.info "Verifying..."
+        ItamaeMitsurin.file_logger.info "Verifying..."
         ItamaeMitsurin.logger.with_indent do
+          @verify_commands.each do |command|
+            run_command(command)
+          end
+        end
+        ItamaeMitsurin.file_logger.with_indent do
           @verify_commands.each do |command|
             run_command(command)
           end

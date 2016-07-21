@@ -1,6 +1,7 @@
 require 'json'
 require 'highline'
-require "tmpdir"
+require 'tmpdir'
+require 'logger'
 
 module ItamaeMitsurin
   module Mitsurin
@@ -81,6 +82,16 @@ module ItamaeMitsurin
 
         def handler_logger
           default = {"handlers"=>[{"type"=>"json", "path"=>"itamae-log.json"}]}
+        end
+
+        def file_logger
+          file_logger = ::Logger.new('logs/itamae.log', 5, 100 * 1024 * 1024).tap do |l|
+            l.formatter = proc do |serverity, datetime, progname, msg|
+              "#{datetime.strftime('%Y %m %d %H:%M:%S %z')} #{serverity} : #{msg}\n"
+            end
+          end
+
+          file_logger
         end
       end
 
