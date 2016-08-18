@@ -63,13 +63,10 @@ module ItamaeMitsurin
 
       @runner.handler.event(:recipe, path: @path) do
         ItamaeMitsurin.logger.with_indent do
-          @children.run
-          run_delayed_notifications
-        end
-
-        ItamaeMitsurin.file_logger.with_indent do
-          @children.run
-          run_delayed_notifications
+          ItamaeMitsurin.file_logger.with_indent do
+            @children.run
+            run_delayed_notifications
+          end
         end
       end
     end
