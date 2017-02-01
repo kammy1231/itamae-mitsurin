@@ -70,13 +70,22 @@ module ItamaeMitsurin
         end
 
         def action_create(options)
-          unless /#{attributes.name}/ === @record[0][0][0]
+          if @record.resource_record_sets.empty?
             resp = @route53.change_resource_record_sets(@rrset_hash)
             ItamaeMitsurin.logger.debug "#{resp}"
             ItamaeMitsurin.logger.color(:green) do
               ItamaeMitsurin.logger.info "aws_route53_rrset[#{attributes.name}] created record"
             end
             updated!
+          else
+            unless /#{attributes.name}/ === @record[0][0][0]
+              resp = @route53.change_resource_record_sets(@rrset_hash)
+              ItamaeMitsurin.logger.debug "#{resp}"
+              ItamaeMitsurin.logger.color(:green) do
+                ItamaeMitsurin.logger.info "aws_route53_rrset[#{attributes.name}] created record"
+              end
+              updated!
+            end
           end
         end
 
