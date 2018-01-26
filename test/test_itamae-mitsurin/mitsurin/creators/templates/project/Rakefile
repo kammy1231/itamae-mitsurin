@@ -1,2 +1,0 @@
-require 'itamae/mitsurin/itamae_task'
-require 'itamae/mitsurin/serverspec_task'
