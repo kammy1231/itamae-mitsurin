@@ -7,6 +7,9 @@ module ItamaeMitsurin
     class HttpRequest < File
       RedirectLimitExceeded = Class.new(StandardError)
 
+      alias_method :_action_create, :action_create
+      undef_method :action_create, :action_delete, :action_edit
+
       define_attribute :action, default: :get
       define_attribute :headers, type: Hash, default: {}
       define_attribute :message, type: String, default: ""
@@ -14,6 +17,20 @@ module ItamaeMitsurin
       define_attribute :url, type: String, required: true
 
       def pre_action
+        attributes.content = fetch_content
+
+				super
+
+        attributes.exist = true
+      end
+
+      def show_differences
+        super
+
+        show_content_diff if @temppath && @current_action == :delete
+      end
+
+      def fetch_content
         uri = URI.parse(attributes.url)
         response = nil
         redirects_followed = 0
@@ -42,29 +59,27 @@ module ItamaeMitsurin
           end
         end
 
-        attributes.content = response.body
-
-        super
+        response.body
       end
 
       def action_delete(options)
-        action_create(options)
+        _action_create(options)
       end
 
       def action_get(options)
-        action_create(options)
+        _action_create(options)
       end
 
       def action_options(options)
-        action_create(options)
+        _action_create(options)
       end
 
       def action_post(options)
-        action_create(options)
+        _action_create(options)
       end
 
       def action_put(options)
-        action_create(options)
+        _action_create(options)
       end
     end
   end
