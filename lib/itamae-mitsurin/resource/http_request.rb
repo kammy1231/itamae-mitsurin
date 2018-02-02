@@ -19,7 +19,7 @@ module ItamaeMitsurin
       def pre_action
         attributes.content = fetch_content
 
-				super
+        super
 
         attributes.exist = true
       end
