@@ -20,6 +20,7 @@ require 'itamae-mitsurin/resource/aws_ebs_volume'
 require 'itamae-mitsurin/resource/aws_route53_rrset'
 require 'itamae-mitsurin/resource/aws_route53_rrset_alias'
 require 'itamae-mitsurin/resource/aws_ec2_instance'
+require 'itamae-mitsurin/resource/s3_file'
 
 module ItamaeMitsurin
   module Resource
