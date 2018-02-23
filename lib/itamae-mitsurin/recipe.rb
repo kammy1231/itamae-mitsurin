@@ -63,10 +63,8 @@ module ItamaeMitsurin
 
       @runner.handler.event(:recipe, path: @path) do
         ItamaeMitsurin.logger.with_indent do
-          ItamaeMitsurin.file_logger.with_indent do
-            @children.run
-            run_delayed_notifications
-          end
+          @children.run
+          run_delayed_notifications
         end
       end
     end
@@ -85,7 +83,6 @@ module ItamaeMitsurin
 
     def show_banner
       ItamaeMitsurin.logger.info "Recipe: #{@path}"
-      ItamaeMitsurin.file_logger.info "Recipe: #{@path}"
     end
 
     class EvalContext

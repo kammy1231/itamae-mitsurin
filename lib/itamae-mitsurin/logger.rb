@@ -118,25 +118,87 @@ module ItamaeMitsurin
         ANSI.public_send(color_code) { str }
       end
     end
-  end
 
- # @logger = ::Logger.new($stdout).tap do |l|
- #   l.formatter = ItamaeMitsurin::Logger::Formatter.new
- # end.extend(ItamaeMitsurin::Logger::Helper)
+    class FileFormatter < Formatter
+      def call(severity, datetime, progname, msg)
+        log = "%s : %s" % ["%5s" % severity, msg2str(msg)]
+        Time.now.strftime('%F %T %z').to_s + log + "\n"
+      end
+
+      # def colorize(str, severity)
+      #   Time.now.strftime('%F %T %z').to_s + str
+      # end
+    end
+
+    def self.broadcast(logger)
+      Module.new do
+        define_method(:add) do |*args, &block|
+          logger.add(*args, &block)
+          super(*args, &block)
+        end
+
+        define_method(:<<) do |x|
+          logger << x
+          super(x)
+        end
+
+        define_method(:close) do
+          logger.close
+          super()
+        end
+
+        define_method(:progname=) do |name|
+          logger.progname = name
+          super(name)
+        end
+
+        define_method(:formatter=) do |formatter|
+          logger.formatter = formatter
+          super(formatter)
+        end
+
+        define_method(:level=) do |level|
+          logger.level = level
+          super(level)
+        end
+
+        define_method(:local_level=) do |level|
+          logger.local_level = level if logger.respond_to?(:local_level=)
+          super(level) if respond_to?(:local_level=)
+        end
+
+        define_method(:silence) do |level = Logger::ERROR, &block|
+          if logger.respond_to?(:silence)
+            logger.silence(level) do
+              if defined?(super)
+                super(level, &block)
+              else
+                block.call(self)
+              end
+            end
+          else
+            if defined?(super)
+              super(level, &block)
+            else
+              block.call(self)
+            end
+          end
+        end
+      end
+    end
+  end
 
   @logger = ::Logger.new($stdout).tap do |l|
     l.formatter = ItamaeMitsurin::Logger::Formatter.new
   end.extend(ItamaeMitsurin::Logger::Helper)
 
-  class ItamaeMitsurin::Logger::FileFormatter < ItamaeMitsurin::Logger::Formatter
-    def colorize(str, severity)
-      Time.now.strftime('%Y %m %d %H:%M:%S %z').to_s + str
-    end
-  end
+  if Dir.exist?('logs')
+    @file_logger = ::Logger.new('logs/itamae.log', 'daily').tap do |l|
+      l.formatter = ItamaeMitsurin::Logger::FileFormatter.new
+    end.extend(ItamaeMitsurin::Logger::Helper)
 
-  @file_logger = ::Logger.new('logs/itamae.log', 5, 100 * 1024 * 1024).tap do |l|
-    l.formatter = ItamaeMitsurin::Logger::FileFormatter.new
-  end.extend(ItamaeMitsurin::Logger::Helper)
+    @logger.extend ItamaeMitsurin::Logger.broadcast(@file_logger)
+  end
 
   class << self
     def logger
@@ -145,14 +207,6 @@ module ItamaeMitsurin
 
     def logger=(l)
       @logger = l.extend(ItamaeMitsurin::Logger::Helper)
-    end
-
-    def file_logger
-      @file_logger
-    end
-
-    def file_logger=(l)
-      @file_logger = l.extend(ItamaeMitsurin::Logger::Helper)
     end
   end
 end

@@ -12,9 +12,7 @@ module ItamaeMitsurin
       super
 
       ItamaeMitsurin.logger.level = ::Logger.const_get(options[:log_level].upcase)
-      ItamaeMitsurin.file_logger.level = ::Logger.const_get(options[:log_level].upcase)
       ItamaeMitsurin.logger.formatter.colored = options[:color]
-      ItamaeMitsurin.file_logger.formatter.colored = options[:color]
     end
 
     def self.define_exec_options

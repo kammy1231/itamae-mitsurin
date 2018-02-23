@@ -59,7 +59,6 @@ module ItamaeMitsurin
         class_name = to_camel_case(name.to_s)
         if Resource.const_defined?(class_name)
           ItamaeMitsurin.logger.warn "Redefine class. (#{class_name})"
-          ItamaeMitsurin.file_logger.warn "Redefine class. (#{class_name})"
           return
         end
 

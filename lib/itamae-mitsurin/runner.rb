@@ -7,7 +7,6 @@ module ItamaeMitsurin
     class << self
       def run(recipe_files, backend_type, options)
         ItamaeMitsurin.logger.info "Starting Itamae..."
-        ItamaeMitsurin.file_logger.info "Starting Itamae..."
 
         backend = Backend.create(backend_type, options)
         runner = self.new(backend, options)
@@ -100,30 +99,30 @@ module ItamaeMitsurin
         unless @backend.run_command("which ohai", error: false).exit_status == 0
           # install Ohai
           ItamaeMitsurin.logger.info "Installing Chef package... (to use Ohai)"
-          ItamaeMitsurin.file_logger.info "Installing Chef package... (to use Ohai)"
           @backend.run_command("curl -L https://www.opscode.com/chef/install.sh | bash")
         end
 
         ItamaeMitsurin.logger.info "Loading node data via ohai..."
-        ItamaeMitsurin.file_logger.info "Loading node data via ohai..."
         hash.merge!(JSON.parse(@backend.run_command("ohai").stdout))
       end
 
       if @options[:node_json]
         path = File.expand_path(@options[:node_json])
         ItamaeMitsurin.logger.info "Loading node data from #{path}..."
-        ItamaeMitsurin.file_logger.info "Loading node data from #{path}..."
         hash.merge!(JSON.load(open(path)))
       end
 
       if @options[:node_yaml]
         path = File.expand_path(@options[:node_yaml])
         ItamaeMitsurin.logger.info "Loading node data from #{path}..."
-        ItamaeMitsurin.file_logger.info "Loading node data from #{path}..."
         hash.merge!(YAML.load(open(path)) || {})
       end
 
       Node.new(hash, @backend)
+
+      ItamaeMitsurin.logger.color(:green) do
+        ItamaeMitsurin.logger.info "Environment: #{hash['environments']['set']}"
+      end
     end
 
     def prepare_handler

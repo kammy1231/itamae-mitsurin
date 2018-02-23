@@ -136,6 +136,7 @@ module ItamaeMitsurin
             command << " --ask-password" unless ssh_password.nil?
             command << " --dry-run" if ENV['dry-run'] == "true"
             command << " -l debug" if ENV['debug'] == "true"
+            command << " --vagrant" if ENV['vagrant'] == "true"
             # command << " -c logs/config/itamae_with_target_task.config"
 
             # Pass to read the recipe command
@@ -171,6 +172,7 @@ module ItamaeMitsurin
 
             puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
             TaskBase.file_logger.info(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
+            #ItamaeMitsurin::Logger.logger.info(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!)
             puts TaskBase.hl.color(%!#{command}!, :white)
             TaskBase.file_logger.debug(%!#{command}!)
             st = system command

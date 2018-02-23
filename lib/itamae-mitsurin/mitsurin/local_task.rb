@@ -6,6 +6,8 @@ include Rake::DSL if defined? Rake::DSL
 module ItamaeMitsurin
   module Mitsurin
     class LocalTask
+      ItamaeMitsurin.logger.formatter.colored = true
+
       namespace :local do
         Dir.glob("nodes/**/*.json").each do |node_file|
           all = []
@@ -132,8 +134,11 @@ module ItamaeMitsurin
               end
             }
 
-            puts TaskBase.hl.color(%!Run List to \"#{run_list_noti.uniq.join(", ")}\"!, :green)
-            puts TaskBase.hl.color(%!#{command}!, :white)
+            ItamaeMitsurin.logger.color(:yellow) do
+              ItamaeMitsurin.logger.info "Run List to \"#{run_list_noti.uniq.join(", ")}\""
+            end
+            ItamaeMitsurin.logger.color(:white) { ItamaeMitsurin.logger.info command }
+
             begin
               st = system command
             rescue Exception => e

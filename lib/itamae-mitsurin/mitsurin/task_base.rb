@@ -1,3 +1,4 @@
+require 'itamae-mitsurin'
 require 'json'
 require 'highline'
 require 'tmpdir'
@@ -85,9 +86,9 @@ module ItamaeMitsurin
         end
 
         def file_logger
-          file_logger = ::Logger.new('logs/itamae.log', 5, 100 * 1024 * 1024).tap do |l|
+          file_logger = ::Logger.new('logs/itamae.log', 'daily').tap do |l|
             l.formatter = proc do |serverity, datetime, progname, msg|
-              "#{datetime.strftime('%Y %m %d %H:%M:%S %z')} #{serverity} : #{msg}\n"
+              "#{datetime.strftime('[M] %F %T %z')} #{serverity} : #{msg}\n"
             end
           end
 
