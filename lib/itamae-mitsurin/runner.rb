@@ -118,11 +118,11 @@ module ItamaeMitsurin
         hash.merge!(YAML.load(open(path)) || {})
       end
 
-      Node.new(hash, @backend)
-
       ItamaeMitsurin.logger.color(:green) do
         ItamaeMitsurin.logger.info "Environment: #{hash['environments']['set']}"
       end
+
+      Node.new(hash, @backend)
     end
 
     def prepare_handler
