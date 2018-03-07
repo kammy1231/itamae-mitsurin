@@ -43,6 +43,10 @@ module ItamaeMitsurin
 
           desc "Serverspec to #{node_name}"
           task node_short do
+            ItamaeMitsurin.logger.color(:cyan) do
+              ItamaeMitsurin.logger.info "Start serverspec_task to #{node[:environments][:hostname]}"
+            end
+
             begin
               run_list = task.load_run_list(node_file)
               environments = task.load_environments(node)
