@@ -1,19 +1,13 @@
-### The main itamae task
+### Normal itamae task
 require 'itamae-mitsurin/mitsurin/itamae_task'
 
-### Change the nodes to be load by a branch of the current git
-### In the case of now 'master' the task nodes in the 'nodes/master/'
-# require 'itamae-mitsurin/mitsurin/itamae_with_git_task'
+### Normal Serverspec task
+require 'itamae-mitsurin/mitsurin/serverspec_task'
 
 ### Change the nodes to be read by a target mode
 ### `rake -T <target>` to load a 'nodes/<target>'
 # require 'itamae-mitsurin/mitsurin/itamae_with_target_task'
+# require 'itamae-mitsurin/mitsurin/serverspec_with_target_task'
 
-### Itamae task for AWS ec2instnce
-require 'itamae-mitsurin/mitsurin/local_task'
-
-### Test task by Serverspec
-require 'itamae-mitsurin/mitsurin/serverspec_task'
-
-### Test task by Serverspec with target pre
-#require 'itamae-mitsurin/mitsurin/serverspec_with_target_task'
+### Itamae local mode
+# require 'itamae-mitsurin/mitsurin/local_task'
