@@ -25,13 +25,13 @@ module ItamaeMitsurin
               f.flock File::LOCK_UN
             end
 
-            resp = JSON.parse(File.read('Project.json'))
-            target = resp['project'] << '/**'
-
             ItamaeMitsurin.logger.color(:green) do
               ItamaeMitsurin.logger.info "Changed target mode '#{project[:project]}'"
             end
           end
+
+          resp = JSON.parse(File.read('Project.json'))
+          target = resp['project'] << '/**'
         rescue => e
           ItamaeMitsurin.logger.error e.inspect
           exit 2
