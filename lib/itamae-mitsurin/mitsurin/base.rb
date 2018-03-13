@@ -27,6 +27,16 @@ module ItamaeMitsurin
         end
       end
 
+      class ::Regexp
+        def match?(m)
+          if self.match(m)
+            true
+          else
+            false
+          end
+        end
+      end
+
       class << self
         # def get_roles(node_file)
         #   roles = []
