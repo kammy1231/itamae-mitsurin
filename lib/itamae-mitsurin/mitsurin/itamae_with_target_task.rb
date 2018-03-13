@@ -32,6 +32,8 @@ module ItamaeMitsurin
 
           resp = JSON.parse(File.read('Project.json'))
           target = resp['project'] << '/**'
+        rescue Errno::ENOENT
+          ItamaeMitsurin.logger.error 'Please select target. - ex: $ rake -T .'
         rescue => e
           ItamaeMitsurin.logger.error e.inspect
           exit 2
