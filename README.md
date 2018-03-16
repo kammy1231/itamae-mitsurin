@@ -21,9 +21,13 @@ $ manaita init
 $ aws configure
 ```
 
-- Tips for AmazonLinux
+## Tips for git user
+- Add this content to your `.gitignore`
 ```
-yum install ruby-devel ruby20-devel gcc-c++ rubygem20-io-console
+tmp-nodes/
+logs/
+Project.json
+!.keep
 ```
 
 ## Usage AWS Resource
